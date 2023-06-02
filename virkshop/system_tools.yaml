@@ -454,3 +454,10 @@
 - (package):
     load: [ "libffi" ]
     asBuildInput: true
+
+# 
+# open source valve index VR library
+# 
+- (package):
+    load: [ "libsurvive" ]
+    asBuildInput: true
