@@ -1,6 +1,6 @@
-import { FileSystem } from "https://deno.land/x/quickr@0.6.24/main/file_system.js"
-import { run, throwIfFails, zipInto, mergeInto, returnAsString, Timeout, Env, Cwd, Stdin, Stdout, Stderr, Out, Overwrite, AppendTo } from "https://deno.land/x/quickr@0.6.24/main/run.js"
-import { Console, black, white, red, green, blue, yellow, cyan, magenta, lightBlack, lightWhite, lightRed, lightGreen, lightBlue, lightYellow, lightMagenta, lightCyan, blackBackground, whiteBackground, redBackground, greenBackground, blueBackground, yellowBackground, magentaBackground, cyanBackground, lightBlackBackground, lightRedBackground, lightGreenBackground, lightYellowBackground, lightBlueBackground, lightMagentaBackground, lightCyanBackground, lightWhiteBackground, bold, reset, dim, italic, underline, inverse, strikethrough, gray, grey, lightGray, lightGrey, grayBackground, greyBackground, lightGrayBackground, lightGreyBackground, } from "https://deno.land/x/quickr@0.6.24/main/console.js"
+import { FileSystem } from "https://deno.land/x/quickr@0.6.25/main/file_system.js"
+import { run, throwIfFails, zipInto, mergeInto, returnAsString, Timeout, Env, Cwd, Stdin, Stdout, Stderr, Out, Overwrite, AppendTo } from "https://deno.land/x/quickr@0.6.25/main/run.js"
+import { Console, black, white, red, green, blue, yellow, cyan, magenta, lightBlack, lightWhite, lightRed, lightGreen, lightBlue, lightYellow, lightMagenta, lightCyan, blackBackground, whiteBackground, redBackground, greenBackground, blueBackground, yellowBackground, magentaBackground, cyanBackground, lightBlackBackground, lightRedBackground, lightGreenBackground, lightYellowBackground, lightBlueBackground, lightMagentaBackground, lightCyanBackground, lightWhiteBackground, bold, reset, dim, italic, underline, inverse, strikethrough, gray, grey, lightGray, lightGrey, grayBackground, greyBackground, lightGrayBackground, lightGreyBackground, } from "https://deno.land/x/quickr@0.6.25/main/console.js"
 import { indent, findAll } from "https://deno.land/x/good@0.7.8/string.js"
 import { intersection, subtract } from "https://deno.land/x/good@0.7.8/set.js"
 import { move as moveAndRename } from "https://deno.land/std@0.133.0/fs/mod.ts"
@@ -172,7 +172,8 @@ export const createVirkshop = async (arg)=>{
                                 
                                 // TODO: there's a lot that could be optimized here since system commands are slow.
                                 // Note: this command is intentionally never awaited because it only needs to be done by the time nix-shell starts, which takes multiple orders of magnitude more time (not awaiting lets it be done in parallel)
-                                run("command", "-v", commandName, Out(returnAsString)).then(async (absolutePathToCommand)=>{
+                                // FIXME: maybe use $SHELL instead of "sh"
+                                run("sh", "-c", `command -v ${shellApi.escapeShellArgument(commandName)}`, Out(returnAsString)).catch(console.error).then(async (absolutePathToCommand)=>{
                                     if (absolutePathToCommand) {
                                         await FileSystem.write({
                                             path: pathThatIsHopefullyGitIgnored,
@@ -284,6 +285,8 @@ export const createVirkshop = async (arg)=>{
                                             }
                                         // otherwise execute it
                                         } else {
+                                            (debuggingLevel >= 2) && console.log(`    [Running ${eachItem.path}]`)
+                                            await FileSystem.addPermissions({ path: eachItem.path, permissions: { owner: {canExecute: true} }})
                                             await run`${eachItem.path}`
                                         }
                                     } catch (error) {

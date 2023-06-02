@@ -1,7 +1,7 @@
 // start as many promises possible here (then await them at the last second possible for optimal runtime)
 const escapeRegExpPromise = import("https://raw.githubusercontent.com/lodash/lodash/2da024c3b4f9947a48517639de7560457cd4ec6c/escapeRegExp.js")
-const fileSystemPromise   = import("https://deno.land/x/quickr@0.6.20/main/file_system.js")
-const runToolsPromise     = import("https://deno.land/x/quickr@0.6.20/main/run.js")
+const fileSystemPromise   = import("https://deno.land/x/quickr@0.6.25/main/file_system.js")
+const runToolsPromise     = import("https://deno.land/x/quickr@0.6.25/main/run.js")
 
 const setupHooks = true
 
@@ -53,7 +53,7 @@ export const deadlines = {
                 return `${start}
                     if [ -n "$VIRKSHOP_FOLDER" ]; then
                         deno eval -q ${virkshop.shellApi.escapeShellArgument(`
-                            import { Console } from "https://deno.land/x/quickr@0.6.20/main/console.js"
+                            import { Console } from "https://deno.land/x/quickr@0.6.25/main/console.js"
                             const { virkshop } = await import(\`\${Console.env.VIRKSHOP_FOLDER||"./virkshop"}/support/virkshop.js\`)
                             await virkshop.trigger("git/${hookName}")
                         `)}
