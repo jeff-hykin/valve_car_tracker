@@ -444,6 +444,10 @@
     asBuildInput: true
 
 - (package):
+    load: [ "python38Packages", "wxPython_4_0" ]
+    asBuildInput: true
+
+- (package):
     load: [ "cmake" ]
     asBuildInput: true
 
@@ -458,6 +462,14 @@
 # 
 # open source valve index VR library
 # 
+- (package):
+    load: [ "gcc" ]
+    asBuildInput: true
+
+- (package):
+    load: [ "gtk3" ]
+    asBuildInput: true
+
 - (package):
     load: [ "libsurvive" ]
     asBuildInput: true
