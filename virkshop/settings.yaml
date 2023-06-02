@@ -1,0 +1,7 @@
+virkshop:
+    projectLinks:
+        # # comment-in these to allow them to auto-link virkshop stuff into the project folder
+        # "$PROJECT_FOLDER/commands":      "$VIRKSHOP_FOLDER/commands"
+        # "$PROJECT_FOLDER/events":        "$VIRKSHOP_FOLDER/events"
+    
+    debuggingLevel: 1

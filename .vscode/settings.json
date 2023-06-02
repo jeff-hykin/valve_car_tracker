@@ -1,0 +1,12 @@
+{
+    "search.exclude": { // "ignore"
+        "**/.git": true,
+        "**/node_modules": true,
+        "**/bower_components": true,
+        "**/venv": true,
+        "**/dist": true,
+        "**/.cache": true,
+        "**/.venv": true,
+        "virkshop/**/*": false,
+    },
+}
