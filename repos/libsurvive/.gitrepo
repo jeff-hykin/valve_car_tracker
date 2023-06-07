@@ -1,0 +1,12 @@
+; DO NOT EDIT (unless you know what you are doing)
+;
+; This subdirectory is a git "subrepo", and this file is maintained by the
+; git-subrepo command. See https://github.com/ingydotnet/git-subrepo#readme
+;
+[subrepo]
+	remote = https://github.com/cntools/libsurvive
+	branch = master
+	commit = ec902cc048baecbca3d704482d3923bdb84a1e7d
+	parent = 75063d80712aebb36be30ec4d14273493ae53b63
+	method = merge
+	cmdver = 0.4.5
