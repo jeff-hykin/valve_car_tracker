@@ -424,6 +424,13 @@
     saveVariableAs: spaceship-prompt
 
 # 
+# extras
+# 
+- (package):
+    load: [ "git-subrepo",]
+    asBuildInput: true
+
+# 
 # 
 # Python
 # 
@@ -477,4 +484,3 @@
 
 - (package):
     load: [ "libsurvive" ]
-    asBuildInput: true
