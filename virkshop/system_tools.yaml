@@ -484,3 +484,4 @@
 
 - (package):
     load: [ "libsurvive" ]
+    asBuildInput: true
