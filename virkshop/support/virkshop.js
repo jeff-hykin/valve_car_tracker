@@ -351,6 +351,8 @@ export const createVirkshop = async (arg)=>{
                             // TODO: get a hash of this and see if nix-shell should even be regenerated or not (as an optimization)
                             const result = await systemToolsToNix({string: yamlString, path: virkshop.pathTo.systemTools})
                             defaultWarehouse = result.defaultWarehouse
+                            // this ensure shouldn't be needed but its a sanity thing, test removal later with a fresh setup
+                            await FileSystem.ensureIsFolder(FileSystem.parentPath(virkshop.pathTo._tempNixShellFile))
                             // TODO: add error for no default warehouse
                             await FileSystem.write({
                                 data: result.string,
