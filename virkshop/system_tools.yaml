@@ -456,7 +456,7 @@
     asBuildInput: true
 
 - (package):
-    load: [ "python38Packages", "wxPython_4_0" ]
+    load: [ "python38Packages", "wxPython_4_1" ]
     asBuildInput: true
 
 - (package):
@@ -485,3 +485,22 @@
 - (package):
     load: [ "libsurvive" ]
     asBuildInput: true
+
+- (package):
+    load: [ "websocketd" ]
+    asBuildInput: true
+
+- (package):
+    load: [ "libstdcxx5" ]
+    asBuildInput: true
+    saveVariableAs: libstdcxx
+
+- (package):
+    load: [ "glibc" ]
+    asBuildInput: true
+    saveVariableAs: glibc
+
+- (package):
+    load: [ "stdenv", "cc", "cc" ]
+    asBuildInput: true
+    saveVariableAs: cc
