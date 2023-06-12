@@ -20,7 +20,7 @@ export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
         },
     },
     events: {
-        // async '@setup_without_system_tools/054_000_setup_python_venv'() {
+        // async '@setup_without_system_tools/python'() {
         //    return {
         //        // deadlines are in chronological order (top is the shortest/soonest)
         //        // HOWEVER, the startup time will be optimized if code is
