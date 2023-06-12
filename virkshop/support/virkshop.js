@@ -1,16 +1,18 @@
 import { FileSystem } from "https://deno.land/x/quickr@0.6.26/main/file_system.js"
 import { run, throwIfFails, zipInto, mergeInto, returnAsString, Timeout, Env, Cwd, Stdin, Stdout, Stderr, Out, Overwrite, AppendTo } from "https://deno.land/x/quickr@0.6.26/main/run.js"
 import { Console, black, white, red, green, blue, yellow, cyan, magenta, lightBlack, lightWhite, lightRed, lightGreen, lightBlue, lightYellow, lightMagenta, lightCyan, blackBackground, whiteBackground, redBackground, greenBackground, blueBackground, yellowBackground, magentaBackground, cyanBackground, lightBlackBackground, lightRedBackground, lightGreenBackground, lightYellowBackground, lightBlueBackground, lightMagentaBackground, lightCyanBackground, lightWhiteBackground, bold, reset, dim, italic, underline, inverse, strikethrough, gray, grey, lightGray, lightGrey, grayBackground, greyBackground, lightGrayBackground, lightGreyBackground, } from "https://deno.land/x/quickr@0.6.26/main/console.js"
-import { indent, findAll } from "https://deno.land/x/good@0.7.8/string.js"
-import { intersection, subtract } from "https://deno.land/x/good@0.7.8/set.js"
+import { indent, findAll, escapeRegexMatch, escapeRegexReplace, } from "https://deno.land/x/good@0.7.18/string.js"
+import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty } from "https://deno.land/x/good@0.7.18/object.js"
+import { intersection, subtract } from "https://deno.land/x/good@0.7.18/set.js"
+import { stats, sum, spread, normalizeZeroToOne, roundedUpToNearest, roundedDownToNearest } from "https://deno.land/x/good@0.7.18/math.js"
+import { zip } from "https://deno.land/x/good@0.7.18/array.js"
+import { hashers } from "https://deno.land/x/good@0.7.18/encryption.js"
 import { move as moveAndRename } from "https://deno.land/std@0.133.0/fs/mod.ts"
-import { zip } from "https://deno.land/x/good@0.7.8/array.js"
-import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty } from "https://deno.land/x/good@0.7.8/object.js"
 import { Type } from "https://deno.land/std@0.82.0/encoding/_yaml/type.ts"
 import * as yaml from "https://deno.land/std@0.82.0/encoding/yaml.ts"
 import * as Path from "https://deno.land/std@0.128.0/path/mod.ts"
-import { stats, sum, spread, normalizeZeroToOne, roundedUpToNearest, roundedDownToNearest } from "https://deno.land/x/good@0.7.8/math.js"
 import { nix } from "./nix_tools.js"
+
 
 // 
 // 
@@ -73,6 +75,7 @@ export const createVirkshop = async (arg)=>{
     const virkshopCache = {}
     const virkshop = Object.defineProperties(
         {
+            version: [1,0,0,],
             settings: {}, // this is not valid until after phase1
             pathTo: Object.defineProperties(
                 {
@@ -83,6 +86,7 @@ export const createVirkshop = async (arg)=>{
                 {
                     events:           { get() { return `${virkshop.pathTo.virkshop}/events` }},
                     commands:         { get() { return `${virkshop.pathTo.virkshop}/commands` }},
+                    plugins:          { get() { return `${virkshop.pathTo.virkshop}/plugins` }}, 
                     injections:       { get() { return `${virkshop.pathTo.temporary}/long_term/injections` }}, 
                     settings:         { get() { return `${virkshop.pathTo.virkshop}/settings` }},
                     temporary:        { get() { return `${virkshop.pathTo.virkshop}/temporary.ignore` }},
@@ -98,6 +102,7 @@ export const createVirkshop = async (arg)=>{
                 return shellApi
             },
             _internal: {
+                importedPlugins: {},
                 homeMappingPriorities: [],
                 shellSetupPriorities: [],
                 finalShellCode: "",
@@ -214,6 +219,8 @@ export const createVirkshop = async (arg)=>{
                 // 
                 async phase0() {
                     debuggingLevel && console.log("[Phase0: Establishing/Verifying Structure]")
+                    debuggingLevel > 1 && console.log(`    reading ${virkshop.pathTo.systemTools} (only time this file is read)`)
+                    virkshop._internal.systemToolsString = await FileSystem.read(virkshop.pathTo.systemTools)
                     
                     // TODO: purge broken system links more
                     
@@ -347,7 +354,13 @@ export const createVirkshop = async (arg)=>{
                             // make sure the systemTools file is stable
                             await Promise.all(virkshop._internal.deadlines.beforeReadingSystemTools)
                             
-                            const yamlString = await FileSystem.read(virkshop.pathTo.systemTools)
+                            // string may have been modified by plugins
+                            const yamlString = virkshop._internal.systemToolsString
+                            // intentionally dont await
+                            FileSystem.write({
+                                data: yamlString,
+                                path: virkshop.pathTo.systemTools,
+                            })
                             // TODO: get a hash of this and see if nix-shell should even be regenerated or not (as an optimization)
                             const result = await systemToolsToNix({string: yamlString, path: virkshop.pathTo.systemTools})
                             defaultWarehouse = result.defaultWarehouse
@@ -687,58 +700,6 @@ export const createVirkshop = async (arg)=>{
                     }
                 }
             },
-            // 
-            // TODO: createCachedCheck
-            // 
-            // const thisMixinPath
-            // const hash
-            // const Console
-            // const FileSystem
-            // let checksCache = null
-            // function createCachedCheck({nameOfCheck, inputString, callback}) {
-            //     // get cache if hasn't already been read
-            //     if (!checksCache) {
-            //         const checksPath = `${Console.env.TMPDIR}/short_term/@virkshop/checks.cleanable.json`
-            //         try {
-            //             checksCache = JSON.parse(await FileSystem.read(checksPath))
-            //             // needs to be a pure object
-            //             if ((checksCache instanceof Array) || !(checksCache instanceof Object)) {
-            //                 throw Error(``)
-            //             }
-            //         } catch (error) {
-            //             checksCache = {}
-            //             // purge corrupt files
-            //             await FileSystem.write({
-            //                 path: checksPath,
-            //                 data: "{}",
-            //             })
-            //         }
-            //     }
-            //     const address = `${thisMixinPath}/${nameOfCheck}`
-            // 
-            //     const shortPath = await FileSystem.makeRelativePath({
-            //         from: virkshop.pathTo.mixins,
-            //         to: thisMixinPath,
-            //     })
-            // 
-            //     const oldHash = checksCache[address]
-            //     const newHash = hash(inputString)
-            //     console.log(`[mixins/${shortPath}] Checking ${nameOfCheck}`)
-            //     if (oldHash == newHash) {
-            //         console.log(`[mixins/${shortPath}] Found cache for ${nameOfCheck}, skipping`)
-            //     } else {
-            //         try {
-            //             await callback
-            //             checksCache[address] = newHash
-            //             await FileSystem.write({
-            //                 data: JSON.stringify(checksCache),
-            //                 path: checksPath,
-            //             })
-            //         } catch (error) {
-            //             console.warn(`[mixins/${shortPath}] Operation Failed ${nameOfCheck}, skipping`)
-            //         }
-            //     }
-            // }
         },
         {
             folder:      { get() { return virkshop.pathTo.virkshop } }, // alias
@@ -774,6 +735,194 @@ export const createVirkshop = async (arg)=>{
                     return virkshopCache.options
                 },
             },
+            async _importPlugin(pluginPath) {
+                if (virkshop.options.debuggingLevel > 1) {
+                    console.log(`    importing plugin: ${pluginPath}`)
+                }
+                // convert URLs to paths so that _importPlugin(import.meta.url) works without additional logic
+                if (pluginPath.startsWith("file://")) {
+                    const {pathname} = new URL(pluginPath)
+                    // from: https://deno.land/std@0.191.0/path/posix.ts?source#L459
+                    pluginPath = decodeURIComponent(pathname.replace(/%(?![0-9A-Fa-f]{2})/g, "%25"))
+                }
+                const id = FileSystem.makeRelativePath({ from: virkshop.pathTo.plugins, to: pluginPath })
+                if (virkshop._internal.importedPlugins[id]) {
+                    return virkshop._internal.importedPlugins[id]
+                }
+                const pluginImport = await import(`${encodeURIComponent(pluginPath).replace(/%2F/g,'/')}`)
+                if (!(pluginImport.default instanceof Function)) {
+                    console.debug(`pluginImport is:`,pluginImport)
+                }
+                const pluginFunction = pluginImport.default
+                
+                const id = FileSystem.makeRelativePath({ from: virkshop.pathTo.plugins, to: pluginPath })
+                const valuesKey = Symbol("values")
+                const directKey = valuesKey
+                const createColdStorageAndOneTimeDo = (name) => {
+                    const storagePath = `${virkshop.pathTo.temporary}/${name}/cold_storage/${id}.json`
+                    let values
+                    // 
+                    // init values
+                    // 
+                        try {
+                            values = JSON.parse(
+                                await FileSystem.read(storagePath)
+                            )
+                        } catch (error) {
+                            const storagePathInfo = await FileSystem.info(storagePath)
+                            if (storagePathInfo.isFile) {
+                                console.warn(`\n\nSeems a cold storage path was corrupted (${JSON.stringify(storagePath)}). It will be wiped out to start fresh\n`)
+                            }
+                            values = {}
+                        }
+                    // 
+                    // storage
+                    // 
+                    const storageManager = {
+                        [valuesKey]: values,
+                        get path() {
+                            return storagePath
+                        },
+                        get(key, _direct) {
+                            if (_direct === directKey) {
+                                return values[key]
+                            } else {
+                                return values[`@${key}`]
+                            }
+                        },
+                        set(key, value, _direct) {
+                            if (_direct === directKey) {
+                                values[key] = value
+                            } else {
+                                values[`@${key}`] = value
+                            }
+                            // no await because it assumes this runtime is the only one touching the cold storage
+                            FileSystem.write({
+                                data: JSON.stringify(
+                                    values,
+                                    0,
+                                    virkshop.options.debuggingLevel > 1 ? 4 : 0, // have indent when debuggingLevel > 1
+                                ),
+                                to: storagePath,
+                            }).catch(async (error)=>{
+                                if (virkshop.options.debuggingLevel > 0) {
+                                    console.warn(error)
+                                }
+                                FileSystem.write({data:"{}", to: storagePath})
+                            })
+                        },
+                    }
+
+                    // 
+                    // doOneTime
+                    // 
+                    async function doOneTime(func) {
+                        const key = "doOneTime:"+await hashers.sha256(func.toString())
+                        if (!storageManager.get(key, directKey)) {
+                            try {
+                                await func()
+                                // only set true if completed without error
+                                storageManager.set(key, true, directKey)
+                            } catch (error) {
+                                console.error(error)
+                            }
+                        }
+                    }
+
+                    return [
+                        storageManager,
+                        doOneTime,
+                    ]
+                }
+                const [ shortTermColdStorage, shortTermDoOneTime ] = createColdStorage("short_term")
+                const [ longTermColdStorage, longTermDoOneTime ] = createColdStorage("long_term")
+                const pluginArgs = {
+                    id,
+                    virkshop,
+                    shortTermColdStorage,
+                    longTermColdStorage,
+                    shellApi,
+                    shortTermDoOneTime,
+                    longTermDoOneTime,
+                }
+                const pluginOutput = await pluginFunction(pluginArgs)
+                const plugin = {
+                    pluginOutput,
+                    ...pluginArgs,
+                }
+                virkshop._internal.importedPlugins[id] = plugin
+                return plugin
+            },
+            async _setupPlugin(pluginPath) {
+                // NOTE: this needs to run in phase1 or earlier
+
+                if (virkshop.options.debuggingLevel > 1) {
+                    console.log(`    setting up plugin: ${pluginPath}`)
+                }
+                // FIXME: do something about settings
+                // FIXME: auto-delete things that used to be autogenerated but are not anymore
+                    // for plugins: done
+                    // for commands: FIXME
+                    // for event hooks: FIXME
+                const {
+                    pluginOutput,
+                    id,
+                    virkshop,
+                    shortTermColdStorage,
+                    longTermColdStorage,
+                    shellApi,
+                    shortTermDoOneTime,
+                    longTermDoOneTime,
+                } = virkshop._importPlugin(pluginPath)
+                const pluginPath = FileSystem.makeRelativePath({
+                    from: virkshop.pathTo.project,
+                    to: `${virkshop.pathTo.plugins}/${id}`,
+                })
+
+                // 
+                // auto-generate system tools
+                //
+                    // FIXME: needs a priority system :( 
+                    // FIXME: what about shared dependenecies (two plugins needing python)
+                    const pluginSystemToolsStart = `# @PLUGIN_START: ${JSON.stringify(id)}`
+                    const pluginSystemToolsEnd = `# @PLUGIN_END: ${JSON.stringify(id)}`
+                    const pluginSectionPattern = new RegExp(`${escapeRegexMatch(pluginSystemToolsStart)}[\w\W]*?\n${escapeRegexMatch(pluginSystemToolsEnd)}`, "g")
+                    // remove and re-add the plugin
+                    virkshop._internal.systemToolsString = virkshop._internal.systemToolsString.replace(pluginSectionPattern, "") + ([
+                        ``,
+                        pluginSystemToolsStart,
+                        `# NOTE: this section is auto-generated!`,
+                        `#       If you want to edit this, change this file: '${pluginPath.replace(/'/g, `'"'"'`)}'`,
+                        pluginSystemToolsEnd,
+                    ].join('\n'))
+
+                // 
+                // auto-generate commands
+                // 
+                const absolutePathToDeno = Deno.execPath()
+                await Promise.all(Object.keys(pluginOutput?.commands||{}).map(async (commandName)=>{
+                    const executablePath = `${virkshop.pathTo.commands}/${commandName}`
+                    await FileSystem.write({
+                        // FIXME: check that the command doesn't already exist
+                        path: executablePath,
+                        data: [
+                            `#!/usr/bin/env -S '${absolutePathToDeno.replace(/'/g, `'"'"'`)}' run --allow-all`,
+                            `// NOTE: this file was auto-generated by the ${JSON.stringify(id)} plugin`,
+                            `//       edit that file, not this one!`,
+                            `import { virkshop } from ${JSON.stringify(FileSystem.makeRelativePath({ from: virkshop.pathTo.commands, to: FileSystem.thisFile }))}`,
+                            `await (await virkshop._importPlugin(import.meta.url)).commands[${JSON.stringify(commandName)}](...Deno.args)`,
+                        ].join("\n")
+                    })
+                    await FileSystem.addPermissions({path: executablePath, permissions: { owner: {canExecute: true} }})
+                }))
+
+                // 
+                // auto-generate event hooks
+                // 
+                    // FIXME
+                    pluginOutput?.events
+                
+            }
         },
     )
     
