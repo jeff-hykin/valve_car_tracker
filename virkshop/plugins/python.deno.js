@@ -7,20 +7,18 @@ import { generateKeys, encrypt, decrypt, hashers } from "https://deno.land/x/goo
     // git.addToGitIgnore()
 
 // indent everything
-const realLog = console.log; console.log = (...args)=>realLog(`    `,...args)
-
 export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
     settings: {
         virtualEnvFolder: `${virkshop.pathTo.project}/.venv`,
         requirementsTxtPath: `${virkshop.pathTo.project}/requirements.txt`,
         ...pluginSettings,
     },
-    // commands: {
-    //     async pip(args) {
-    //         // always use the version connected to python, and disable the version check, but otherwise be the same
-    //         await run("python", "-m", "pip", "--disable-pip-version-check", ...args)
-    //     },
-    // },
+    commands: {
+        async pip(args) {
+            // always use the version connected to python, and disable the version check, but otherwise be the same
+            await run("python", "-m", "pip", "--disable-pip-version-check", ...args)
+        },
+    },
     events: {
         // async '@setup_without_system_tools/054_000_setup_python_venv'() {
         //    return {
@@ -65,8 +63,9 @@ export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
             // create venv if needed
             // 
             const virtualEnvPath = await FileSystem.info(VIRTUAL_ENV)
+            let shellStatements = []
             if (virtualEnvPath.isFolder) {
-                console.log(`creating virtual env for python`)
+                console.log(`        [python] creating virtual env for python`)
                 // clean first
                 await this.events['clean/054_000_python_venv']()
                 // then create venv
@@ -78,13 +77,12 @@ export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
                     this.methods.cachedInstallFromRequirementsTxt()
 
                     // export ENV variables
-                    virkshop.shellApi.overwriteEnvVars({
-                        PATH,
-                        TMPDIR,
-                        VIRTUAL_ENV,
-                    })
+                    shellStatements.push(   shellApi.modifyEnvVar({ name: "PATH"       , overwriteAs: PATH        })   )
+                    shellStatements.push(   shellApi.modifyEnvVar({ name: "TMPDIR"     , overwriteAs: TMPDIR      })   )
+                    shellStatements.push(   shellApi.modifyEnvVar({ name: "VIRTUAL_ENV", overwriteAs: VIRTUAL_ENV })   )
                 }
             }
+            return shellStatements
         },
         async 'clean/054_000_python_venv'() {
             for (const eachFolder of await glob('**/__pycache__')) {
@@ -121,26 +119,29 @@ export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
     },
     methods: {
         async cachedInstallFromRequirementsTxt() {
-            await helpers.changeChecker({
-                checkName: "requirements.txt",
-                filePaths: [ this.settings.requirementsTxtPath ],
-                values: [],
-                executeOnFirstTime: true,
-                whenNoChange: ()=>{
-                    console.log(`[python] skipping pip install because requirements.txt seems unchanged`)
-                },
-                whenChanged: async ()=>{
-                    console.log(`[python] runing pip install because requirements.txt seems different`)
-                    const { success } = await run`python -m pip install --disable-pip-version-check install -r ${this.settings.requirementsTxtPath}`
-                    if (success) {
-                        console.log(`[python] pip install finished successfully`)
-                        helpers.shortTermColdStorage.set(requirementsTxtKey, hash)
-                    } else {
-                        console.error(`    [python] pip install failed, see output above`)
-                        throw Error(``) // throw error so changeChecker() knows not to cache the change (will keep triggering until runs without errors)
-                    }
-                },
-            })
+            const requirementsTxtPath = await FileSystem.info(this.settings.requirementsTxtPath)
+            if (requirementsTxtPath.exists) {
+                await helpers.changeChecker({
+                    checkName: "requirements.txt",
+                    filePaths: [ this.settings.requirementsTxtPath ],
+                    values: [],
+                    executeOnFirstTime: true,
+                    whenNoChange: ()=>{
+                        console.log(`        [python] skipping pip install because requirements.txt seems unchanged`)
+                    },
+                    whenChanged: async ()=>{
+                        console.log(`        [python] runing pip install because requirements.txt seems different`)
+                        const { success } = await run`python -m pip install --disable-pip-version-check install -r ${this.settings.requirementsTxtPath}`
+                        if (success) {
+                            console.log(`        [python] pip install finished successfully`)
+                            helpers.shortTermColdStorage.set(requirementsTxtKey, hash)
+                        } else {
+                            console.error(`        [python] pip install failed, see output above`)
+                            throw Error(``) // throw error so changeChecker() knows not to cache the change (will keep triggering until runs without errors)
+                        }
+                    },
+                })
+            }
         },
     },
 })
