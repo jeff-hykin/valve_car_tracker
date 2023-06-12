@@ -1,7 +1,7 @@
 import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.26/main/file_system.js"
 import { Console } from "https://deno.land/x/quickr@0.6.26/main/console.js"
 import { run, Stdin, Stdout, Stderr, returnAsString, hasCommand } from "https://deno.land/x/quickr@0.6.26/main/run.js"
-import { generateKeys, encrypt, decrypt, hashers } from "https://deno.land/x/good@0.7.11/encryption.js"
+import { generateKeys, encrypt, decrypt, hashers } from "https://deno.land/x/good@0.7.18/encryption.js"
 
 // todo:
     // git.addToGitIgnore()
@@ -9,46 +9,35 @@ import { generateKeys, encrypt, decrypt, hashers } from "https://deno.land/x/goo
 // indent everything
 const realLog = console.log; console.log = (...args)=>realLog(`    `,...args)
 
-export default ({id, virkshop, shortTermColdStorage, longTermColdStorage, shellApi, shortTermDoOneTime, longTermDoOneTime })=>({
+export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
     settings: {
         virtualEnvFolder: `${virkshop.pathTo.project}/.venv`,
         requirementsTxtPath: `${virkshop.pathTo.project}/requirements.txt`,
+        ...pluginSettings,
     },
-    systemTools: `
-        # 
-        # 
-        # Python
-        # 
-        # 
-        - (package):
-            load: [ "python38",]
-            asBuildInput: true
-
-        - (package):
-            load: [ "python38Packages", "setuptools" ]
-            asBuildInput: true
-
-        - (package):
-            load: [ "python38Packages", "pip" ]
-            asBuildInput: true
-
-        - (package):
-            load: [ "python38Packages", "virtualenv" ]
-            asBuildInput: true
-
-        - (package):
-            load: [ "python38Packages", "wheel" ]
-            asBuildInput: true
-    `,
-    commands: {
-        async pip(args) {
-            // always use the version connected to python, and disable the version check, but otherwise be the same
-            await run("python", "-m", "pip", "--disable-pip-version-check", ...args)
-        },
-    },
+    // commands: {
+    //     async pip(args) {
+    //         // always use the version connected to python, and disable the version check, but otherwise be the same
+    //         await run("python", "-m", "pip", "--disable-pip-version-check", ...args)
+    //     },
+    // },
     events: {
         // async '@setup_without_system_tools/054_000_setup_python_venv'() {
-        // 
+        //    return {
+        //        // deadlines are in chronological order (top is the shortest/soonest)
+        //        // HOWEVER, the startup time will be optimized if code is
+        //        // placed in the bottom-most deadline (last deadline)
+        //        // because of async/concurrent computations
+        //        async beforeSetup(virkshop) {
+        //            // virkshop.injectUsersCommand("sudo")
+        //        },
+        //        async beforeReadingSystemTools(virkshop) {
+        //        },
+        //        async beforeShellScripts(virkshop) {
+        //        },
+        //        async beforeEnteringVirkshop(virkshop) {
+        //        },
+        //     }
         // },
         async '@setup_with_system_tools/054_000_setup_python_venv'() {
             // having a TMPDIR is required for venv to work
@@ -62,14 +51,14 @@ export default ({id, virkshop, shortTermColdStorage, longTermColdStorage, shellA
             // regenerate venv if needed
             // 
             const pythonVersion = await run`python --version ${Stdout(returnAsString)}`
-            const oldPythonVersion = virkshop.longTermColdStorage.get('pythonVersion')
+            const oldPythonVersion = helpers.longTermColdStorage.get('pythonVersion')
             const pythonVersionChangedSinceLastTime = oldPythonVersion && oldPythonVersion !== pythonVersion
             if (pythonVersionChangedSinceLastTime) {
                 if (await Console.askFor.yesNo(`\nIt looks like your python version has changed from ${oldPythonVersion} to ${pythonVersion}\nIt is highly recommended to regenerate your python venv when this happens.\nWould you like me to go ahead and do that?`)) {
                     this.events['purge/054_000_python_venv']()
                 }
             } else {
-                virkshop.longTermColdStorage.set('pythonVersion',  pythonVersion)
+                helpers.longTermColdStorage.set('pythonVersion',  pythonVersion)
             }
             
             // 
@@ -104,7 +93,7 @@ export default ({id, virkshop, shortTermColdStorage, longTermColdStorage, shellA
         },
         async 'purge/054_000_python_venv'() {
             await Promise.all([
-                FileSystem.remove(pythonVenv.VIRTUAL_ENV),
+                FileSystem.remove(this.settings.virtualEnvFolder),
                 FileSystem.remove(`${virkshop.pathTo.fakeHome}/.cache/pip`),
                 FileSystem.remove(`${virkshop.pathTo.fakeHome}/.cache/pypoetry/`),
                 FileSystem.remove(`${virkshop.pathTo.fakeHome}/.local/share/virtualenv`),
@@ -127,31 +116,31 @@ export default ({id, virkshop, shortTermColdStorage, longTermColdStorage, shellA
             ])
         },
         async 'git/post-update/054_000_python_venv'() {
-            this.settings.cachedInstallFromRequirementsTxt() 
+            this.methods.cachedInstallFromRequirementsTxt() 
         },
     },
     methods: {
         async cachedInstallFromRequirementsTxt() {
-            const requirmentsTxtContents = await FileSystem.read(this.settings.requirementsTxtPath)
-            if (!requirmentsTxtContents) {
-                return
-            } else {
-                const requirementsTxtKey = 'requirements.txt:hash'
-                const hash = await hashers.sha256(
-                    await FileSystem.read(this.settings.requirementsTxtPath)
-                )
-                const oldHash = virkshop.shortTermColdStorage.get(requirementsTxtKey)
-                if (hash === oldHash) {
+            await helpers.changeChecker({
+                checkName: "requirements.txt",
+                filePaths: [ this.settings.requirementsTxtPath ],
+                values: [],
+                executeOnFirstTime: true,
+                whenNoChange: ()=>{
                     console.log(`[python] skipping pip install because requirements.txt seems unchanged`)
-                } else {
+                },
+                whenChanged: async ()=>{
                     console.log(`[python] runing pip install because requirements.txt seems different`)
                     const { success } = await run`python -m pip install --disable-pip-version-check install -r ${this.settings.requirementsTxtPath}`
                     if (success) {
                         console.log(`[python] pip install finished successfully`)
-                        virkshop.shortTermColdStorage.set(requirementsTxtKey, hash)
+                        helpers.shortTermColdStorage.set(requirementsTxtKey, hash)
+                    } else {
+                        console.error(`    [python] pip install failed, see output above`)
+                        throw Error(``) // throw error so changeChecker() knows not to cache the change (will keep triggering until runs without errors)
                     }
-                }
-            }
+                },
+            })
         },
     },
 })

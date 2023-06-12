@@ -1,7 +1,10 @@
 virkshop:
     projectLinks:
+        # FIXME
         # # comment-in these to allow them to auto-link virkshop stuff into the project folder
-        # "$PROJECT_FOLDER/commands":      "$VIRKSHOP_FOLDER/commands"
-        # "$PROJECT_FOLDER/events":        "$VIRKSHOP_FOLDER/events"
+        # !path/relative_to_project ./commands: !path/relative_to_virkshop ./commands
     
     debuggingLevel: 1
+    fileExtensionsToIgnore:
+        - .ignore
+        - .keep
