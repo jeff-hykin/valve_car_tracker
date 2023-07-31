@@ -1616,13 +1616,28 @@ export const systemToolsToNix = async function({string, path}) {
     const warehouseAsNixValue = (values)=> {
         const nixCommitHash = values.createWarehouseFrom.nixCommitHash
         const tarFileUrl = values.createWarehouseFrom.tarFileUrl || `https://github.com/NixOS/nixpkgs/archive/${nixCommitHash}.tar.gz`
+        const tarFileHash = values.createWarehouseFrom.tarFileHash
         const warehouseArguments = values.arguments || {}
-        return `(_-_core.import
-            (_-_core.fetchTarball
-                ({url=${JSON.stringify(tarFileUrl)};})
-            )
-            (${indent({ string: nix.escapeJsValue(warehouseArguments), by: "            ", noLead: true})})
-        )`.replace(/\n        /g,"\n")
+        if (!tarFileHash) {
+            return `(_-_core.import
+                (_-_core.fetchTarball
+                    ({
+                        url=${JSON.stringify(tarFileUrl)};
+                    })
+                )
+                (${indent({ string: nix.escapeJsValue(warehouseArguments), by: "            ", noLead: true})})
+            )`.replace(/\n            /g,"\n")
+        } else {
+            return `(_-_core.import
+                (_-_core.fetchTarball
+                    ({
+                        url=${JSON.stringify(tarFileUrl)};
+                        sha256=${JSON.stringify(tarFileHash)};
+                    })
+                )
+                (${indent({ string: nix.escapeJsValue(warehouseArguments), by: "            ", noLead: true})})
+            )`.replace(/\n            /g,"\n")
+        }
     }
 
     for (const eachEntry of dataStructure) {
@@ -1660,6 +1675,7 @@ export const systemToolsToNix = async function({string, path}) {
             warehouses[varName] = new SystemToolVar()
             warehouses[varName].name = varName
             warehouses[varName].tarFileUrl = tarFileUrl
+            warehouses[varName].tarFileHash = values.createWarehouseFrom.sha256
             warehouses[varName].arguments = warehouseArguments
             // if is will end up being a unique name
             saveNixVar(varName, warehouseAsNixValue(values))
