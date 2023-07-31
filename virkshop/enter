@@ -1,7 +1,0 @@
-#!/usr/bin/env -S deno -q run --allow-all
-import { nix } from "./support/nix_tools.js"
-import { virkshop } from "./support/virkshop.js"
-
-await nix.ensureInstalled()
-await virkshop.enter()
-// (this comment is part of deno-guillotine, dont remove) #>
