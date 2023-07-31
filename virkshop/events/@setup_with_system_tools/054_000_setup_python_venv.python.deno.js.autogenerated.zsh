@@ -2,7 +2,7 @@
 ;
 # all its doing is importing that javascript^, running a specific function from it, and then shell-sourcing the string output
 ;
-'/nix/store/rjwfw4m3643arzlsv01f3s7c0r9jj9wj-deno-1.22.0/bin/deno' 'eval' '-q' '
+'/Users/jeffhykin/.deno/bin/deno' 'eval' '-q' '
                                                     import { FileSystem } from "https://deno.land/x/quickr@0.6.27/main/file_system.js"
                                                     const [ virkshopFile, tempShellOutputPath, pluginPath ] = Deno.args
                                                     const { virkshop, shellApi } = await import(virkshopFile)
@@ -13,6 +13,6 @@
                                                         data: shellString,
                                                         path: tempShellOutputPath,
                                                     })
-                                                ' '--' '/home/jeffhykin/repos/valve_car_tracker/virkshop/support/virkshop.js' '/home/jeffhykin/repos/valve_car_tracker/virkshop/temporary.ignore/short_term/event_evals/05612651905496147.sh' 'python.deno.js'
+                                                ' '--' '/Users/jeffhykin/repos/valve_car_tracker/virkshop/support/virkshop.js' '/Users/jeffhykin/repos/valve_car_tracker/virkshop/temporary.ignore/short_term/event_evals/05988392513476046.sh' 'python.deno.js'
 ;
-'.' '/home/jeffhykin/repos/valve_car_tracker/virkshop/temporary.ignore/short_term/event_evals/05612651905496147.sh'
+'.' '/Users/jeffhykin/repos/valve_car_tracker/virkshop/temporary.ignore/short_term/event_evals/05988392513476046.sh'
