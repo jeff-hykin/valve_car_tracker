@@ -1,6 +1,6 @@
-import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.26/main/file_system.js"
-import { Console } from "https://deno.land/x/quickr@0.6.26/main/console.js"
-import { run, Stdin, Stdout, Stderr, returnAsString, hasCommand } from "https://deno.land/x/quickr@0.6.26/main/run.js"
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
+import { Console } from "https://deno.land/x/quickr@0.6.38/main/console.js"
+import { run, Stdin, Stdout, Stderr, returnAsString, hasCommand } from "https://deno.land/x/quickr@0.6.38/main/run.js"
 import { generateKeys, encrypt, decrypt, hashers } from "https://deno.land/x/good@0.7.18/encryption.js"
 
 // todo:

@@ -1,6 +1,6 @@
-import { FileSystem } from "https://deno.land/x/quickr@0.6.26/main/file_system.js"
-import { Console } from "https://deno.land/x/quickr@0.6.26/main/console.js"
-import { run, Stdout, Stderr } from "https://deno.land/x/quickr@0.6.26/main/run.js"
+import { FileSystem } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
+import { Console } from "https://deno.land/x/quickr@0.6.38/main/console.js"
+import { run, Stdout, Stderr } from "https://deno.land/x/quickr@0.6.38/main/run.js"
 
 const localLibSurviveCopy = `${Console.env.PROJECT_FOLDER}/repos/libsurvive`
 const libSurviveConfig = `${FileSystem.home}/.config/libsurvive/config.json`
