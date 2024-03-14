@@ -1,6 +1,6 @@
-import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
-import { run, throwIfFails, zipInto, mergeInto, returnAsString, Timeout, Env, Cwd, Stdin, Stdout, Stderr, Out, Overwrite, AppendTo } from "https://deno.land/x/quickr@0.6.38/main/run.js"
-import { Console, black, white, red, green, blue, yellow, cyan, magenta, lightBlack, lightWhite, lightRed, lightGreen, lightBlue, lightYellow, lightMagenta, lightCyan, blackBackground, whiteBackground, redBackground, greenBackground, blueBackground, yellowBackground, magentaBackground, cyanBackground, lightBlackBackground, lightRedBackground, lightGreenBackground, lightYellowBackground, lightBlueBackground, lightMagentaBackground, lightCyanBackground, lightWhiteBackground, bold, reset, dim, italic, underline, inverse, strikethrough, gray, grey, lightGray, lightGrey, grayBackground, greyBackground, lightGrayBackground, lightGreyBackground, } from "https://deno.land/x/quickr@0.6.38/main/console.js"
+import { FileSystem, glob } from "https://deno.land/x/quickr@0.6.63/main/file_system.js"
+import { run, throwIfFails, zipInto, mergeInto, returnAsString, Timeout, Env, Cwd, Stdin, Stdout, Stderr, Out, Overwrite, AppendTo } from "https://deno.land/x/quickr@0.6.63/main/run.js"
+import { Console, black, white, red, green, blue, yellow, cyan, magenta, lightBlack, lightWhite, lightRed, lightGreen, lightBlue, lightYellow, lightMagenta, lightCyan, blackBackground, whiteBackground, redBackground, greenBackground, blueBackground, yellowBackground, magentaBackground, cyanBackground, lightBlackBackground, lightRedBackground, lightGreenBackground, lightYellowBackground, lightBlueBackground, lightMagentaBackground, lightCyanBackground, lightWhiteBackground, bold, reset, dim, italic, underline, inverse, strikethrough, gray, grey, lightGray, lightGrey, grayBackground, greyBackground, lightGrayBackground, lightGreyBackground, } from "https://deno.land/x/quickr@0.6.63/main/console.js"
 import { indent, findAll, escapeRegexMatch, escapeRegexReplace, } from "https://deno.land/x/good@0.7.18/string.js"
 import { recursivelyAllKeysOf, get, set, remove, merge, compareProperty } from "https://deno.land/x/good@0.7.18/object.js"
 import { intersection, subtract } from "https://deno.land/x/good@0.7.18/set.js"
@@ -512,7 +512,7 @@ export const createVirkshop = async (arg)=>{
                                                 "eval",
                                                 "-q",
                                                 `
-                                                    import { FileSystem } from "https://deno.land/x/quickr@0.6.27/main/file_system.js"
+                                                    import { FileSystem } from "https://deno.land/x/quickr@0.6.63/main/file_system.js"
                                                     const [ virkshopFile, tempShellOutputPath, pluginPath ] = Deno.args
                                                     const { virkshop, shellApi } = await import(virkshopFile)
                                                     const { pluginOutput } = await virkshop._internal.importPlugin(pluginPath)
