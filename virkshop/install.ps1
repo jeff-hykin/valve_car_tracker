@@ -16,7 +16,7 @@ import { parse } from "https://deno.land/std@0.171.0/flags/mod.ts"
 
 // 
 // start some async ops
-//
+// 
     // schedule file read
     const currentSystemToolsPromise = parsePackageTools(virkshop.pathTo.systemTools)
 
@@ -24,66 +24,152 @@ import { parse } from "https://deno.land/std@0.171.0/flags/mod.ts"
 // pre-check
 // 
     await nix.ensureInstalled()
-    // FIXME: make sure git installed
-    // FIXME: make sure project uses git
-    // FIXME: check for any unstaged changes
-    // TODO: eventually use wasm-git instead of a system tool
 
 // 
 // main code
 // 
-    let { repo, branch, tag, commit, help } = {
-        repo: Deno.args[0],
-        branch: null,
-        tag: null,
-        commit: null,
+    let { packageName, from, help } = {
+        packageName: Deno.args[0],
         ...parse(Deno.args),
     }
-    // go to the root before starting
-    FileSystem.pwd = virkshop.pathTo.project
 
     if (help || Deno.args.length == 0) {
         console.log(`
             examples usages:
-                virkshop/mixin \\
-                    --repo git@github.com:jeff-hykin/virkshop.git \\
-                    --branch master
-                
-                virkshop/mixin \\
-                    --repo git@github.com:jeff-hykin/virkshop.git \\
-                    --tag v1.1.0
-                
-                virkshop/mixin \\
-                    --repo git@github.com:jeff-hykin/virkshop.git \\
-                    --branch master
-                    --commit affa05c6928247fe4e4453f6514ff777b2543842
-                
-                virkshop/mixin \\
-                    --repo git@github.com:jeff-hykin/virkshop.git \\
-                    --branch master \\
-                    --commit affa05c6928247fe4e4453f6514ff777b2543842
+                virkshop/install python3
+                virkshop/install python3 --from warehouseWithTorch_1_8_1
         `.replace(/^            /g, ""))
         Deno.exit(0)
     }
-    
-    // tags and branches are basically the same thing
-    branch = branch || tag || "master"
-    
-    console.log("Just FYI you may need to handle a git merge in a moment")
-    
-    // ignore result
-    await run`git remote remove ${"@__temp__"} ${Out(null)}`
-    var {success} = await run`git remote add ${"@__temp__"} ${repo}`.outcome
-    var {success} = success && await run`git fetch ${"@__temp__"} ${branch}`
-    if (commit) {
-        var {success} = success && await run`git cherry-pick ${commit}`
-    } else {
-        var {success} = success && await run`git pull --allow-unrelated-histories ${"@__temp__"} ${branch}`
-    }
-    // clean up leftovers
-    await run`git remote remove ${"@__temp__"} ${Out(null)}`
 
-    if (success) {
-        await virkshop.trigger("@upon_mixing")
+    // 
+    // pick warehouse
+    // 
+    const currentSystemTools = await currentSystemToolsPromise
+    const relativePathToSystemTools = FileSystem.makeRelativePath({from: FileSystem.pwd, to: virkshop.pathTo.systemTools})
+    let warehouseTarFileUrl = currentSystemTools.defaultWarehouse.createWarehouseFrom.tarFileUrl
+    const warehouses = Object.fromEntries(currentSystemTools.warehouses.map(each=>[each.saveAs, each])) 
+    if (from) {
+        if (!warehouses[from]) {
+            console.error(`\n\nI was given --from ${from}\nHowever, when looking at ${relativePathToSystemTools} I didn't see that warehouse. I only see these: \n    ${Object.keys(warehouses).join("\n    ")}\n`)
+        } else {
+            // extract out the tar file URL
+            warehouseTarFileUrl = warehouses[from].createWarehouseFrom.tarFileUrl
+        }
     }
+    
+    // 
+    // check if package already installed
+    // 
+    console.log()
+    const packageAttributeStrings = currentSystemTools.directPackages.map(each=>each.load.join("."))
+    if (packageAttributeStrings.includes(packageName)) {
+        // TODO: could improve this message, e.g. "Did you want to install a different version?"
+        console.log(`It looks like ${packageName} is already inside ${relativePathToSystemTools}`)
+        if (! await Console.askFor.yesNo(`\nDo you want to add it anyways?`)) {
+            console.log(`Okay`)
+            Deno.exit(1)
+        }
+        console.log(`Okay`)
+    }
+
+    // 
+    // search + install steps
+    // 
+    console.log(`... searching ${from||"defaultWarehouse"}, getting a response from nix can take a minute ...`)
+    const currentPlatform = await run(
+        "nix",
+        "eval",
+        "--extra-experimental-features", "nix-command",
+        "--impure",
+        "--raw",
+        "--expr",
+        `
+            (builtins.import 
+                (builtins.fetchTarball
+                    ({url=${nix.escapeJsValue(warehouseTarFileUrl)};})
+                )
+                ({})
+            ).stdenv.system
+        `,
+        Stdout(returnAsString)
+    )
+    const resultString =  await run('nix-env', '-qa', packageName, "--json", "--system-filter", currentPlatform, "-f", warehouseTarFileUrl, Stdout(returnAsString))
+    if (resultString) {
+        const results = JSON.parse(resultString)
+        const packageAttributeNames = Object.entries(results).map(([key, value])=>key.replace(/^nixpkgs\.(.+)/,"$1"))
+        const packageCommonNames = Object.entries(results).map(([key, value])=>value.pname)
+        const packageVersions = Object.entries(results).map(([key, value])=>value.version)
+        if (packageAttributeNames.includes(packageName)) {
+            const index = packageAttributeNames.indexOf(packageName)
+            const version = packageVersions[index]
+            console.log(`... found exact match`)
+            if (version) {
+                console.log(`... version: ${version}`)
+            }
+            const versionComment = version ? `\n    # version at time of install: ${version}` : ""
+            await FileSystem.write({
+                path: virkshop.pathTo.systemTools,
+                data: currentSystemTools.asString+`
+                    
+                    - (package):${versionComment}
+                        asBuildInput: true
+                        load: [ ${JSON.stringify(packageName)},]
+                `.replace(/\n                    /g, "\n"),
+            })
+            console.log(`Package successfully added to ${relativePathToSystemTools}`)
+        } else {
+            console.log(`Here are some similar names, re-run with one of them (e.g. virkshop/install ${packageAttributeNames[0]})`)
+            const namePadding    = Math.max(...packageAttributeNames.map(each=>each.length))
+            const versionPadding = Math.max(...packageVersions.map(each=>`${each}`.length))
+            for (const [ attribute, commonlyCalled, version ] of zip(packageAttributeNames, packageCommonNames, packageVersions)) {
+                console.log(`    ${attribute.padEnd(namePadding)} (version:${version.padEnd(versionPadding)}, commonlyCalled:${commonlyCalled})`)
+            }
+        }
+        Deno.exit(0)
+    }
+    console.log("Sorry I don't see that package :/")
+    
+    // {
+    // "nixpkgs.firefox-esr": {
+    //     "name": "firefox-102.3.0esr",
+    //     "pname": "firefox",
+    //     "version": "102.3.0esr",
+    //     "system": "aarch64-darwin",
+    //     "outputName": "out",
+    //     "outputs": {
+    //     "out": null
+    //     }
+    // },
+    // "nixpkgs.firefox-esr-wayland": {
+    //     "name": "firefox-102.3.0esr",
+    //     "pname": "firefox",
+    //     "version": "102.3.0esr",
+    //     "system": "aarch64-darwin",
+    //     "outputName": "out",
+    //     "outputs": {
+    //     "out": null
+    //     }
+    // },
+    // "nixpkgs.firefox": {
+    //     "name": "firefox-105.0.3",
+    //     "pname": "firefox",
+    //     "version": "105.0.3",
+    //     "system": "aarch64-darwin",
+    //     "outputName": "out",
+    //     "outputs": {
+    //     "out": null
+    //     }
+    // },
+    // "nixpkgs.firefox-wayland": {
+    //     "name": "firefox-105.0.3",
+    //     "pname": "firefox",
+    //     "version": "105.0.3",
+    //     "system": "aarch64-darwin",
+    //     "outputName": "out",
+    //     "outputs": {
+    //     "out": null
+    //     }
+    // }
+    // }
 // (this comment is part of deno-guillotine, dont remove) #>

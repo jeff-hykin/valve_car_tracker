@@ -62,11 +62,11 @@
 #     fromWarehouse: !!var defaultWarehouse
 #     saveVariableAs: isArm64
 
-# # example4: create an isLinux variable
-# - (compute):
-#     saveVariableAs: isLinux
-#     value: !!deno |
-#         Deno.build.os == 'linux'
+# example4: create an isLinux variable
+- (compute):
+    saveVariableAs: isLinux
+    value: !!deno |
+        Deno.build.os == 'linux'
 
 # # example5: create an isUbuntu variable
 # - (compute):
@@ -116,7 +116,7 @@
 - (package):
     load: [ "deno",]
     asBuildInput: true
-    from: "f1b9cc23aa8b1549dd7cb53dbe9fc950efc97646" # a commit-hash of https://github.com/NixOS/nixpkgs, e.g. https://github.com/NixOS/nixpkgs/archive/f1b9cc23aa8b1549dd7cb53dbe9fc950efc97646.tar.gz
+    from: "c10d7026fbae24c51e87586c6b6e4c46c0365007" # a commit-hash of https://github.com/NixOS/nixpkgs, e.g. https://github.com/NixOS/nixpkgs/archive/c10d7026fbae24c51e87586c6b6e4c46c0365007.tar.gz
 
 - (package):
     load: [ "nix",]
@@ -486,6 +486,7 @@
 - (package):
     load: [ "libsurvive" ]
     asBuildInput: true
+    onlyIf: !!var isLinux
 
 - (package):
     load: [ "websocketd" ]
@@ -495,11 +496,13 @@
     load: [ "libstdcxx5" ]
     asBuildInput: true
     saveVariableAs: libstdcxx
+    onlyIf: !!var isLinux
 
 - (package):
     load: [ "glibc" ]
     asBuildInput: true
     saveVariableAs: glibc
+    onlyIf: !!var isLinux
 
 - (package):
     load: [ "stdenv", "cc", "cc" ]

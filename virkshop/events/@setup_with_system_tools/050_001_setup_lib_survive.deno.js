@@ -14,7 +14,7 @@ await FileSystem.ensureIsFolder(
 // first time setup
 // 
 const configInfo = await FileSystem.info(libSurviveConfig)
-if (!configInfo.exists) {
+if (!configInfo.exists && Deno.build.os == 'linux' ) {
     console.log("        I see the libsurvive config hasn't been created yet, so I'm going to do some inital setup")
     console.log("        I'm going to run the commands from the 'Getting Started' area, which require sudo")
     console.log("        https://github.com/cntools/libsurvive/tree/ec902cc048baecbca3d704482d3923bdb84a1e7d#getting-started")
