@@ -1,4 +1,4 @@
-'
+
 # Pinout:
     # ,--------------------------------.
     # | oooooooooooooooooooo J8     +====
@@ -38,14 +38,36 @@
     # GPIO10 (19) (20) GND   
     #  GPIO9 (21) (22) GPIO25
     # GPIO11 (23) (24) GPIO8 
-    #    GND (25) (26) GPIO7 
+    #    GND (25) (26) GPIO7                            <connections>                              <wire colors>   
     #  GPIO0 (27) (28) GPIO1 
-    #  GPIO5 (29) (30) GND   
-    #  GPIO6 (31) (32) GPIO12
-    # GPIO13 (33) (34) GND   
-    # GPIO19 (35) (36) GPIO16
-    # GPIO26 (37) (38) GPIO20
-    #    GND (39) (40) GPIO21
+    #  GPIO5 (29) (30) GND                                                                               [white   ]                
+    #  GPIO6 (31) (32) GPIO12    |   [front_left_toggle  #5BE] [back_left_spin    #C55]    |    [yellow] [purple  ]
+    # GPIO13 (33) (34) GND       |   [front_left_spin    #5BE] [     ground #000      ]    |    [green ]   <gap>
+    # GPIO19 (35) (36) GPIO16    |   [front_right_toggle #50E] [back_left_toggle  #C55]    |    [blue  ] [blue    ]   
+    # GPIO26 (37) (38) GPIO20    |   [front_right_spin   #50E] [back_right_spin   #9C6]    |    [purple] [green   ] 
+    #    GND (39) (40) GPIO21    |   [    ground #000        ] [back_right_toggle #9C6]    |    [white ] [yellow  ]  
+    
+    
+    #     #5BE                <front>                #50E                                        
+    #  __________                                 __________ 
+    # [          ]                               [          ]
+    # [ speed=33 ]    _______________________    [ speed=37 ]
+    # [          ]===|                       |===[          ]
+    # [ tog=31   ]   |                       |   [ tog=35   ]
+    # [          ]   |                       |   [          ]
+    #  ▔▔▔▔▔▔▔▔▔▔    |                       |    ▔▔▔▔▔▔▔▔▔▔ 
+    #                |                       |               
+    #                |                       |               
+    #                |         <car>         |               
+    #     #C55       |                       |       #9C6    
+    #  __________    |                       |    __________ 
+    # [          ]   |                       |   [          ]
+    # [ speed=32 ]   |                       |   [ speed=38 ]
+    # [          ]===|                       |===[          ]
+    # [ tog=36   ]   |                       |   [ tog=40   ]
+    # [          ]   |                       |   [          ]
+    #  ▔▔▔▔▔▔▔▔▔▔    |_______________________|    ▔▔▔▔▔▔▔▔▔▔ 
+    #                                                        
 
 import RPi.GPIO as GPIO
 import time
@@ -53,6 +75,40 @@ import time
 GPIO.setmode(GPIO.BOARD)
 
 pins = {}
+def test_pwm(pin_number, cycles=1):
+    
+    # 
+    # setup pin, if not already setup
+    # 
+    if pin_number in pins:
+        pwm = pins[pin_number]
+        if isinstance(pwm, PwmPin):
+            raise Exception(f'''Looks like pin {pin_number} was trying to be setup as a PwmPin when it was already a {type(pwm)}''')
+    else:
+        GPIO.setup(pin_number, GPIO.OUT)
+        GPIO.output(pin_number, GPIO.LOW)
+        pwm = GPIO.PWM(pin_number, 1000)
+        pins[pin_number] = pwm
+    
+        pwm.stop()
+        pwm.start(0)
+
+    # 
+    # cycle through all values
+    # 
+    for each in range(cycles):
+        for dc in range(0, 101, 1):
+            pwm.ChangeDutyCycle(dc)
+            time.sleep(0.01)
+        
+        time.sleep(1)
+        
+        for dc in range(100, -1, -1):
+            pwm.ChangeDutyCycle(dc)
+            time.sleep(0.01)
+        
+        time.sleep(1)
+
 class PwmPin:
     def __init__(self, pin_number):
         if pin_number in pins:
@@ -102,8 +158,11 @@ class Wheel:
         self.toggle_setter.set(speed < 0)
         self.speed_setter.set(abs(speed))
 
-back_left_wheel = Wheel(speed_pin=32, toggle_pin=36, name="back_left_wheel")
-back_right_wheel = Wheel(speed_pin=38, toggle_pin=40, name="back_right_wheel")
+# back_left_wheel = Wheel(speed_pin=32, toggle_pin=36, name="back_left_wheel")
+# back_right_wheel = Wheel(speed_pin=38, toggle_pin=40, name="back_right_wheel")
+# front_left_wheel = Wheel(speed_pin=33, toggle_pin=_, name="font_left_wheel")
+# front_right_wheel = Wheel(speed_pin=37, toggle_pin=_, name="font_right_wheel")
+
 
 def test_wheels():
     while True:
@@ -131,5 +190,3 @@ def destroy():
     # pwm.stop()
     # GPIO.output(pwm1_out, GPIO.LOW)
     GPIO.cleanup()
-
-# loop()
