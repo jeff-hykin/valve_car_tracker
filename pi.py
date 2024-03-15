@@ -41,10 +41,10 @@
     #    GND (25) (26) GPIO7                            <connections>                              <wire colors>   
     #  GPIO0 (27) (28) GPIO1 
     #  GPIO5 (29) (30) GND                                                                               [white   ]                
-    #  GPIO6 (31) (32) GPIO12    |   [front_left_toggle  #5BE] [back_left_spin    #C55]    |    [yellow] [purple  ]
-    # GPIO13 (33) (34) GND       |   [front_left_spin    #5BE] [     ground #000      ]    |    [green ]   <gap>
+    #  GPIO6 (31) (32) GPIO12    |   [front_left_toggle  #5BE] [back_left_velocity    #C55]    |    [yellow] [purple  ]
+    # GPIO13 (33) (34) GND       |   [front_left_velocity    #5BE] [     ground #000      ]    |    [green ]   <gap>
     # GPIO19 (35) (36) GPIO16    |   [front_right_toggle #50E] [back_left_toggle  #C55]    |    [blue  ] [blue    ]   
-    # GPIO26 (37) (38) GPIO20    |   [front_right_spin   #50E] [back_right_spin   #9C6]    |    [purple] [green   ] 
+    # GPIO26 (37) (38) GPIO20    |   [front_right_velocity   #50E] [back_right_velocity   #9C6]    |    [purple] [green   ] 
     #    GND (39) (40) GPIO21    |   [    ground #000        ] [back_right_toggle #9C6]    |    [white ] [yellow  ]  
     
     
@@ -209,11 +209,11 @@ def test_wheels(wheels):
         time.sleep(1)
 
 class Car:
-    def go(left_spin, right_spin):
-        back_left_wheel.spin(left_spin)
-        front_left_wheel.spin(left_spin)
-        back_right_wheel.spin(right_spin)
-        front_right_wheel.spin(right_spin)
+    def go(left_velocity, right_velocity):
+        back_left_wheel.spin(left_velocity)
+        front_left_wheel.spin(left_velocity)
+        back_right_wheel.spin(right_velocity)
+        front_right_wheel.spin(right_velocity)
     
     def drive(velocity, spin):
         """
@@ -248,6 +248,6 @@ class Car:
             left = -100
             right -= extra # (-100+25)-(-25) => -50
         
-        Car.go(velocity-spin, velocity+spin)
+        Car.go(left, right)
         
 
