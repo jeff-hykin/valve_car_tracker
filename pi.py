@@ -82,7 +82,7 @@ def test_pwm(pin_number, cycles=1):
     # 
     if pin_number in pins:
         pwm = pins[pin_number]
-        if isinstance(pwm, PwmPin):
+        if isinstance(pwm, GPIO.PWM):
             raise Exception(f'''Looks like pin {pin_number} was trying to be setup as a PwmPin when it was already a {type(pwm)}''')
     else:
         GPIO.setup(pin_number, GPIO.OUT)
@@ -111,15 +111,18 @@ def test_pwm(pin_number, cycles=1):
 
 class PwmPin:
     def __init__(self, pin_number):
-        if pin_number in pins:
+        already_setup = pin_number in pins
+        if already_setup:
             self.pwm = pins[pin_number]
-            if isinstance(self.pwm, PwmPin):
-                raise Exception(f'''Looks like pin {pin_number} was trying to be setup as a PwmPin when it was already a {type(self.pwm)}''')
-        else:
+            if not isinstance(self.pwm, GPIO.PWM):
+                print(f'''Warning: looks like pin {pin_number} was trying to be setup as a PwmPin when it was already a {type(self.pwm)}''')
+        
+        if not already_setup or not isinstance(self.pwm, GPIO.PWM):
             GPIO.setup(pin_number, GPIO.OUT)
             GPIO.output(pin_number, GPIO.LOW)
             self.pwm = GPIO.PWM(pin_number, 1000)
             pins[pin_number] = self.pwm
+        
         self.pwm.stop()
         self.pwm.start(0)
     
@@ -131,7 +134,11 @@ class DigitalPin:
         self.pin_number = pin_number
         if pin_number not in pins:
             GPIO.setup(self.pin_number, GPIO.OUT)
-            pins[pin_number] = DigitalPin
+            pins[pin_number] = self
+        elif isinstance(pins[pin_number], PwmPin):
+            print(f"Warning: {pin_number} was a pwm pin. Resetting it now")
+            pins[pin_number].stop()
+            pins[pin_number] = self
         GPIO.output(self.pin_number, GPIO.LOW)
     
     def set(self, value):
@@ -158,19 +165,34 @@ class Wheel:
         self.toggle_setter.set(speed < 0)
         self.speed_setter.set(abs(speed))
 
-# back_left_wheel = Wheel(speed_pin=32, toggle_pin=36, name="back_left_wheel")
-# back_right_wheel = Wheel(speed_pin=38, toggle_pin=40, name="back_right_wheel")
-# front_left_wheel = Wheel(speed_pin=33, toggle_pin=_, name="font_left_wheel")
-# front_right_wheel = Wheel(speed_pin=37, toggle_pin=_, name="font_right_wheel")
+def reset():
+    for each_key, each_value in pins.items():
+        if isinstance(each_value, GPIO.PWM):
+            each_value.stop()
+    GPIO.cleanup()
 
+back_left_wheel   = Wheel(speed_pin=32, toggle_pin=36, name="back_left_wheel")
+back_right_wheel  = Wheel(speed_pin=38, toggle_pin=40, name="back_right_wheel")
+front_left_wheel  = Wheel(speed_pin=33, toggle_pin=31, name="font_left_wheel")
+front_right_wheel = Wheel(speed_pin=37, toggle_pin=35, name="font_right_wheel")
 
-def test_wheels():
+wheels = [
+    back_left_wheel,
+    back_right_wheel,
+    front_left_wheel,
+    front_right_wheel,
+]
+def test_wheels(wheels):
     while True:
-        for each_wheel in [back_left_wheel, back_right_wheel]:
+        for each_wheel in wheels:
             forwards = 1
             backwards = -1
             print(f'''{each_wheel.name}''')
             for each_direction in [forwards, backwards]:
+                if each_direction == forwards:
+                    print(f'''    forwards''')
+                else:
+                    print(f'''    backwards''')
                 
                 # 0 to 100
                 for speed in range(0, 101, 1):
@@ -186,7 +208,46 @@ def test_wheels():
         
         time.sleep(1)
 
-def destroy():
-    # pwm.stop()
-    # GPIO.output(pwm1_out, GPIO.LOW)
-    GPIO.cleanup()
+class Car:
+    def go(left_spin, right_spin):
+        back_left_wheel.spin(left_spin)
+        front_left_wheel.spin(left_spin)
+        back_right_wheel.spin(right_spin)
+        front_right_wheel.spin(right_spin)
+    
+    def drive(velocity, spin):
+        """
+            negative spin means left
+        """
+        velocity =  100 if velocity >  100 else velocity
+        velocity = -100 if velocity < -100 else velocity
+        spin     =  100 if spin     >  100 else spin
+        spin     = -100 if spin     < -100 else spin
+        
+        spin = spin/2
+        left = velocity-spin  # 100-25
+        right = velocity+spin # 100+25
+        if right > 100:
+            extra = right-100 # 25
+            right = 100
+            left -= extra     # (100-25)-25
+        if right < -100:      
+            # left  = -100+25
+            # right = -100-25
+            extra = right+100 # -25
+            right = -100
+            left -= extra # (-100+25)-(-25) => -50
+        if left > 100:
+            extra = left-100 # 25
+            left = 100
+            right -= extra     # (100-25)-25
+        if left < -100:      
+            # right  = -100+25
+            # left = -100-25
+            extra = left+100 # -25
+            left = -100
+            right -= extra # (-100+25)-(-25) => -50
+        
+        Car.go(velocity-spin, velocity+spin)
+        
+
