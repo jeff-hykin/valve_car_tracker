@@ -224,7 +224,7 @@ class Car:
         spin     =  100 if spin     >  100 else spin
         spin     = -100 if spin     < -100 else spin
         
-        spin = spin/2
+        spin = (spin*abs(velocity/100))/2 # if velocity=0 then spin=0, then split the spin between each side
         left = velocity-spin  # 100-25
         right = velocity+spin # 100+25
         if right > 100:
@@ -250,4 +250,3 @@ class Car:
         
         Car.go(left, right)
         
-
