@@ -1158,9 +1158,10 @@ $(function() {
 			survive_ws = new WebSocket(((window.location.protocol === "https:") ? "wss://" : "ws://") +
 									   window.location.host + "/ws");
 		}
-
+        window.survive_ws = survive_ws
 		survive_ws.onmessage = function(evt) {
 			var msg = evt.data;
+            window.msg = msg
 			process_survive_handlers(msg);
 		};
 	}, 60); // Hacky, but this gives the server time to restart on CTRL+R
