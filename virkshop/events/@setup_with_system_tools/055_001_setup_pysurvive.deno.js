@@ -14,6 +14,7 @@ if (Console.env.VIRTUAL_ENV) {
         console.log(`\n\n        I expected the system_tools.yaml to have a \`saveVariableAs: cc\`\n        Usually something like:\n            - (package):\n                load: [ "stdenv", "cc", "cc" ]\n                saveVariableAs: cc\n\n        but I didn't see one, or the lib folder didnt exist\n`)
     } else {
         if (venvInfo.isFolder) {
+            console.log("\n\n        running libsurvive patch")
             const sharedObjectFiles = await glob(`${Console.env.VIRTUAL_ENV}/lib/**/*.so`)
             for (const eachSharedObjectFile of sharedObjectFiles) {
                 // intentionally not awaited

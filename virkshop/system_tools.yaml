@@ -487,6 +487,7 @@
     load: [ "libsurvive" ]
     asBuildInput: true
     onlyIf: !!var isLinux
+    saveVariableAs: libsurvive
 
 - (package):
     load: [ "websocketd" ]
