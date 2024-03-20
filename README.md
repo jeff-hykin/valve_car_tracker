@@ -2,5 +2,7 @@
 2. cd to this directory
 3. run `virkshop/enter`
 4. (if it fails with "bad gateway" or "file could not be found" run it one or two more times)
-5. test out the `libsurive` command and the python `pysurvive` library
+5. Once the headset is plugged in, run `survive-cli --v 5` to calibrate it. (it won't say "done" so you'll have to kill it after a while)
+6. Then run `survive-websocketd` and open the file-url it prints out in a browser to get a visualization
+7. test out the `libsurive` command and the python `pysurvive` library
     - https://github.com/cntools/libsurvive

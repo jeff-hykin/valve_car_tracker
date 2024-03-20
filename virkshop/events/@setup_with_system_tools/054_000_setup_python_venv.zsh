@@ -5,7 +5,7 @@ export VIRTUAL_ENV="$PROJECT_FOLDER/.venv"
 export PATH="$VIRKSHOP_HOME/.local/bin:$PATH"
 if ! [ -d "$VIRTUAL_ENV" ]
 then
-    echo "        creating virtual env for python"
+    echo "        creating virtual env for python: $VIRTUAL_ENV"
     # run the cleanup
     python -m venv "$VIRTUAL_ENV" && echo "        virtual env created"
 fi
