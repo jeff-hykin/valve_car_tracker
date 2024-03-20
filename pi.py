@@ -182,8 +182,8 @@ wheels = [
     front_left_wheel,
     front_right_wheel,
 ]
-def test_wheels(wheels):
-    while True:
+def test_wheels(wheels, cycles=1):
+    for each in range(cycles):
         for each_wheel in wheels:
             forwards = 1
             backwards = -1
@@ -215,18 +215,21 @@ class Car:
         back_right_wheel.spin(right_velocity)
         front_right_wheel.spin(right_velocity)
     
-    def drive(velocity, spin):
+    def drive(velocity, direction):
         """
-            negative spin means left
+            negative direction means left
         """
         velocity =  100 if velocity >  100 else velocity
         velocity = -100 if velocity < -100 else velocity
-        spin     =  100 if spin     >  100 else spin
-        spin     = -100 if spin     < -100 else spin
-        
-        spin = (spin*abs(velocity/100))/2 # if velocity=0 then spin=0, then split the spin between each side
-        left = velocity-spin  # 100-25
-        right = velocity+spin # 100+25
+        direction     =  100 if direction     >  100 else direction
+        direction     = -100 if direction     < -100 else direction
+        print(f'''_''')
+        direction = (direction*abs(velocity/100))/2 # if velocity=0 then direction=0, then split the direction between each side
+        print(f'''    direction = {direction}''')
+        left = velocity-direction  # 100-25
+        right = velocity+direction # 100+25
+        print(f'''    inital left = {left}''')
+        print(f'''    inital right = {right}''')
         if right > 100:
             extra = right-100 # 25
             right = 100
@@ -248,5 +251,7 @@ class Car:
             left = -100
             right -= extra # (-100+25)-(-25) => -50
         
+        print(f'''    left = {left}''')
+        print(f'''    right = {right}''')
         Car.go(left, right)
         
