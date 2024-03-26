@@ -597,8 +597,8 @@ export const nix = {
                 const nixCertPathInfo = await nixCertPathPromise
                 if (!nixCertPathInfo.isFile) {
                     // forcefully link
-                    var {success} = await run`sudo /bin/mkdir -p ${FileSystem.parentPath(nixCertPath)}`
-                    var {success} = await run`sudo /bin/ln -s ${Console.env.NIX_SSL_CERT_FILE} ${nixCertPath}`
+                    var {success} = await run`sudo /bin/mkdir -p ${FileSystem.parentPath(nixCertPathInfo.path)}`
+                    var {success} = await run`sudo /bin/ln -s ${Console.env.NIX_SSL_CERT_FILE} ${nixCertPathInfo.path}`
                     // FIXME: report errors if not successful
                     // TODO: instead of depending on /bin/mkdir run a sudo process with the current deno executable
                 }
