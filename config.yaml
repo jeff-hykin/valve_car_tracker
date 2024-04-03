@@ -1,0 +1,20 @@
+(project):
+    # the local_data file will be auto-generated
+    # (its for machine-specific data)
+    # so probably git-ignore whatever path you pick
+    (local_data): ./local_data.ignore.yaml
+    
+    # example profiles
+    (profiles):
+        (default):
+            default_keyboard_port: 8080
+        
+        PROFILE1:
+            constants:
+                e: 2.7182818285
+        
+        PROD:
+            mode: production
+            constants:
+                pi: 3.1415926536
+                problems: true
