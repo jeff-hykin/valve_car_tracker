@@ -27,9 +27,11 @@ from generic_tools import pick_item
 
 # get ip for websocket
 port = config.default_keyboard_port
+ip_address = config.get("ip_address", None)
 ip_addr_command = f"{parent_folder}/my_ip"
 ip_addresses = subprocess.check_output([ip_addr_command]).decode('utf-8')[0:-1].split("\n")
-ip_address = pick_item(ip_addresses, message="Which IP address do you want to use?")
+if ip_address == None:
+    ip_address = pick_item(ip_addresses, message="Which IP address do you want to use?")
 
 # 
 # car handler
@@ -48,6 +50,7 @@ class LiveValues:
     iteration = 0
     car_speed = 0
     car_steer = 0
+    compensation = 0
     time_of_last_command = time.time()
     
 def send_car_commands():
@@ -63,12 +66,12 @@ def send_car_commands():
             if dry_run:
                 if LiveValues.car_steer != 0 and LiveValues.iteration % log_rate == 0: print(f'''go: {LiveValues.car_steer}, 0''')
             else:
-                Car.drive(velocity=0, direction=LiveValues.car_steer)
+                Car.drive(velocity=0, direction=LiveValues.car_steer+LiveValues.compensation)
         else:
             if dry_run:
                 if LiveValues.iteration % log_rate == 0: print(f'''go: {LiveValues.car_steer}, {LiveValues.car_speed}''')
             else:
-                Car.drive(velocity=LiveValues.car_speed, direction=LiveValues.car_steer)
+                Car.drive(velocity=LiveValues.car_speed, direction=LiveValues.car_steer+LiveValues.compensation)
         
         # return back torwards zeros if no new command given
         if LiveValues.car_speed < 0:
@@ -108,6 +111,10 @@ async def socket_response(websocket):
                     LiveValues.car_steer += steer_increment_rate
                     if LiveValues.car_steer > 100:
                         LiveValues.car_steer = 100
+                if json_message["key"] in ["+"]:
+                    LiveValues.compensation += 1
+                if json_message["key"] in ["-"]:
+                    LiveValues.compensation -= 1
                     
         
         except Exception as error:
