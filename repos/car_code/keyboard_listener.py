@@ -39,33 +39,36 @@ import time
 update_rate = 0.05
 dead_zone_size = 10
 timeout_size = 2
+log_rate = 5 # once every 5 
 speed_increment_rate = 20
-speed_neutralize_rate = 5
+speed_neutralize_rate = 0
 steer_increment_rate = 20
-steer_neutralize_rate = 5
+steer_neutralize_rate = 0
 class LiveValues:
+    iteration = 0
     car_speed = 0
     car_steer = 0
     time_of_last_command = time.time()
     
 def send_car_commands():
     while True:
-        if time.time() - LiveValues.time_of_last_command > timeout_size:
+        LiveValues.iteration += 1
+        if (time.time() - LiveValues.time_of_last_command) > timeout_size:
             LiveValues.car_speed = 0
             LiveValues.car_steer = 0
-            print(f'''time_of_last_command > {timeout_size}sec, sending all zeros''')
+            if LiveValues.iteration % log_rate == 0: print(f'''time_of_last_command > {timeout_size}sec, sending all zeros''')
         
         time.sleep(update_rate)
         if LiveValues.car_speed < dead_zone_size and LiveValues.car_speed > -dead_zone_size:
             if dry_run:
-                print(f'''go: {LiveValues.car_steer}, 0''')
+                if LiveValues.car_steer != 0 and LiveValues.iteration % log_rate == 0: print(f'''go: {LiveValues.car_steer}, 0''')
             else:
-                Car.go(LiveValues.car_steer, 0)
+                Car.drive(velocity=0, direction=LiveValues.car_steer)
         else:
             if dry_run:
-                print(f'''go: {LiveValues.car_steer}, {LiveValues.car_speed}''')
+                if LiveValues.iteration % log_rate == 0: print(f'''go: {LiveValues.car_steer}, {LiveValues.car_speed}''')
             else:
-                car.go(LiveValues.car_steer, LiveValues.car_speed)
+                Car.drive(velocity=LiveValues.car_speed, direction=LiveValues.car_steer)
         
         # return back torwards zeros if no new command given
         if LiveValues.car_speed < 0:
