@@ -62,10 +62,14 @@ while (true) {
     let socket
     let websocketConnection
     try {
-        socket = new WebSocket(`ws://${args.address}:${args.port}`)
+        socket = new WebSocket(`ws://${args.address}:${args.port}/keypresses`)
         websocketConnection = deferredPromise()
         socket.onopen = websocketConnection.resolve
-        socket.onerror = websocketConnection.reject
+        socket.onerror = (...args)=>{ 
+            console.debug(`socket.onerror is:`,args)
+            websocketConnection.rejected = true
+            // websocketConnection.reject(...args)
+        }
     } catch (error) {
         console.error(`Error connecting to websocket, I'll try to reconnect`)
         await new Promise(r=>setTimeout(r,1000))
@@ -79,12 +83,7 @@ while (true) {
         if (websocketConnection.state == "pending") {
             console.log("Waiting for websocket connection")
             await new Promise(r=>setTimeout(r,1000))
-        } else if (websocketConnection.state == "rejected") {
-            try {
-                await websocketConnection
-            } catch (error) {
-                
-            }
+        } else if (websocketConnection.rejected) {
             console.error(`Error connecting to websocket, I'll try to reconnect`)
             await new Promise(r=>setTimeout(r,1000))
             continue
@@ -102,6 +101,7 @@ while (true) {
             Deno.exit(0)
         } else {
             try {
+                console.debug(`keypress is:`,keypress)
                 await socket.send(JSON.stringify(keypress))
             } catch (error) {
                 console.error(`Error sending keypress to websocket, I'll try to reconnect:\n`, error)
