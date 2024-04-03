@@ -80,13 +80,13 @@ while (true) {
     // wait for connection with message
     // 
     while (true) {
-        if (websocketConnection.state == "pending") {
-            console.log("Waiting for websocket connection")
-            await new Promise(r=>setTimeout(r,1000))
-        } else if (websocketConnection.rejected) {
+        if (websocketConnection.rejected) {
             console.error(`Error connecting to websocket, I'll try to reconnect`)
             await new Promise(r=>setTimeout(r,1000))
             continue
+        } else if (websocketConnection.state == "pending") {
+            console.log("Waiting for websocket connection")
+            await new Promise(r=>setTimeout(r,1000))
         } else {
             console.log("Connected!\n")
             break

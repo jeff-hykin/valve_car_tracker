@@ -39,10 +39,10 @@ import time
 update_rate = 0.05
 dead_zone_size = 10
 timeout_size = 2
-speed_increment_rate = 1
-speed_neutralize_rate = 1
-steer_increment_rate = 1
-steer_neutralize_rate = 1
+speed_increment_rate = 20
+speed_neutralize_rate = 5
+steer_increment_rate = 20
+steer_neutralize_rate = 5
 class LiveValues:
     car_speed = 0
     car_steer = 0
@@ -55,6 +55,7 @@ def send_car_commands():
             LiveValues.car_steer = 0
             print(f'''time_of_last_command > {timeout_size}sec, sending all zeros''')
         
+        time.sleep(update_rate)
         if LiveValues.car_speed < dead_zone_size and LiveValues.car_speed > -dead_zone_size:
             if dry_run:
                 print(f'''go: {LiveValues.car_steer}, 0''')
@@ -102,7 +103,7 @@ async def socket_response(websocket):
                         LiveValues.car_steer = -100
                 if json_message["key"] in ["right", "d", "l"]:
                     LiveValues.car_steer += steer_increment_rate
-                    if LiveValues.car_steer < 100:
+                    if LiveValues.car_steer > 100:
                         LiveValues.car_steer = 100
                     
         
@@ -113,6 +114,7 @@ async def socket_response(websocket):
 # start servers
 # 
 async def main():
+    print(f'''Starting keyboard_listener socket''')
     async with websockets.serve(socket_response, ip_address, port):
         await asyncio.Future()  # run forever
 
