@@ -1,3 +1,4 @@
+import atexit
 
 # Pinout:
     # ,--------------------------------.
@@ -209,7 +210,7 @@ def test_wheels(wheels, cycles=1):
         time.sleep(1)
 
 class Car:
-    prev_drive_action = [0,0]
+    prev_drive_action = [None,None]
     def go(left_velocity, right_velocity):
         back_left_wheel.spin(left_velocity)
         front_left_wheel.spin(left_velocity)
@@ -223,56 +224,37 @@ class Car:
         if Car.prev_drive_action == [velocity, direction]:
             return
         Car.prev_drive_action = [velocity, direction]
+        if velocity == 0:
+            Car.go(0, 0)
+            return
         velocity =  100 if velocity >  100 else velocity
         velocity = -100 if velocity < -100 else velocity
         direction     =  100 if direction     >  100 else direction
         direction     = -100 if direction     < -100 else direction
         
-        # direction = 100; slow_side = 0   * velocity
-        # direction = 50 ; slow_side = 0.5 * velocity
-        # direction = 0  ; slow_side = 1   * velocity
-        slow_side = (1-(abs(direction)/100)) * velocity
         
-        print(f'''direction = {direction}''')
-        print(f'''velocity = {velocity}''')
-        print(f'''(abs(direction)/100) = {(abs(direction)/100)}''')
-        print(f'''(1-(abs(direction)/100)) = {(1-(abs(direction)/100))}''')
-        print(f'''slow_side = {slow_side}''')
+        # direction = 100; slow_side = (0   * velocity)/2
+        # direction = 50 ; slow_side = (0.5 * velocity)/2
+        # direction = 0  ; slow_side = (1   * velocity)/2
+        slow_side_speed = ((1-(abs(direction)/100)) * abs(velocity))/2
+        # split the velocity between the two halves
+        fast_side_speed = abs(velocity)-slow_side_speed
         
-        if direction < 0:
-            Car.go(slow_side, velocity)
+        if velocity < 0:
+            slow_side_velocity = -slow_side_speed
+            fast_side_velocity = -fast_side_speed
         else:
-            Car.go(velocity, slow_side)
+            slow_side_velocity = slow_side_speed
+            fast_side_velocity = fast_side_speed
+            
+        if direction < 0:
+            Car.go(slow_side_velocity, fast_side_velocity)
+        else:
+            Car.go(fast_side_velocity, slow_side_velocity)
         
-        # # print(f'''_''')
-        # direction = (direction*abs(velocity/100))/2 # if velocity=0 then direction=0, then split the direction between each side
-        # # print(f'''    direction = {direction}''')
-        # left = velocity-direction  # 100-25
-        # right = velocity+direction # 100+25
-        # # print(f'''    inital left = {left}''')
-        # # print(f'''    inital right = {right}''')
-        # if right > 100:
-        #     extra = right-100 # 25
-        #     right = 100
-        #     left -= extra     # (100-25)-25
-        # if right < -100:      
-        #     # left  = -100+25
-        #     # right = -100-25
-        #     extra = right+100 # -25
-        #     right = -100
-        #     left -= extra # (-100+25)-(-25) => -50
-        # if left > 100:
-        #     extra = left-100 # 25
-        #     left = 100
-        #     right -= extra     # (100-25)-25
-        # if left < -100:      
-        #     # right  = -100+25
-        #     # left = -100-25
-        #     extra = left+100 # -25
-        #     left = -100
-        #     right -= extra # (-100+25)-(-25) => -50
-        
-        # # print(f'''    left = {left}''')
-        # # print(f'''    right = {right}''')
-        # Car.go(left, right)
-        
+@atexit.register
+def exit_handler():
+    try:
+        Car.go(0,0)
+    except Exception as error:
+        pass
