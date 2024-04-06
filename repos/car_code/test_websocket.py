@@ -5,7 +5,7 @@ from collections import defaultdict
 serve = websockets.serve
 
 # 
-# boilerplat for python await
+# boilerplate for python await
 # 
 import threading
 values_to_await = []
