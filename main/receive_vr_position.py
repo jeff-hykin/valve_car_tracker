@@ -1,35 +1,43 @@
-import asyncio
-import websockets
+import threading
+import time
+from websockets.sync.client import connect
 
-
-async def listen_for_messages():
-    uri = "ws://localhost:8080/ws"  # Change the URI to your WebSocket server
-
-    async with websockets.connect(uri) as websocket:
-        print("Connected to WebSocket server")
-
+threads_to_join = []
+position = None # [ x_axis, y_axis, height_axis, pitch, roll, yaw, roll? ]
+def record_position_func():
+    global position
+    while True:
         try:
-            while True:
-                message = await websocket.recv()
-                if "POSE" in message and not "T20" in message and not "LH_" in message:
-                    print(
-                        repr(
-                            [
-                                f"{round(float(each), ndigits=1)}".ljust(6, "0")
+            with connect("ws://localhost:8080") as websocket:
+                while 1:
+                    message = websocket.recv()
+                    if "POSE" in message and not "T20" in message and not "LH_" in message:
+                        position = [
+                            float(each)
                                 for each in message.split(" ")
-                                if len(each) > 0
-                                and (each[0].isdigit() or each[0] == "-")
-                            ][1:]
-                        )
-                        + "     ",
-                        end="\r",
-                    )
-                    
-                    # [       x_axis, y_axis, height_axis,      pitch, roll, yaw, roll    ]
-                    # print("Received message:", message, end="\r")
-
-        except websockets.exceptions.ConnectionClosedOK:
-            print("WebSocket connection closed")
+                                    if len(each) > 0 and (each[0].isdigit() or each[0]=="-") 
+                        ][1:]
+        except Exception as error:
+            print(f'''error listening to position ({error})\nTrying to reconnect''')
+record_position_thread = threading.Thread(target=record_position_func, args=())
+record_position_thread.start()
+threads_to_join.append(record_position_thread)
 
 
-asyncio.run(listen_for_messages())
+def printer():
+    global position
+    while 1:
+        time.sleep(0.5)
+        print(f'''{position}''')
+printer_thread = threading.Thread(target=printer, args=())
+printer_thread.start()
+threads_to_join.append(printer_thread)
+
+
+
+
+import atexit
+@atexit.register
+def exit_handler():
+    for each in threads_to_join:
+        each.join()
