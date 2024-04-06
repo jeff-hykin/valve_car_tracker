@@ -30,8 +30,11 @@ const argsInfo = parseArgs({
     rawArgs: Deno.args,
     fields: [
         [["--debug", "-d", ], flag, ],
-        [["--port"], initialValue(`8080`), (str)=>str],
+        [["--port"], initialValue(`7070`), (str)=>str],
         [["--address"], initialValue(`localhost`), (str)=>str],
+        [["--log-path"], initialValue(`positions.ignore.yaml`), (str)=>str],
+        [["--vr-port"], initialValue(`8080`), (str)=>str],
+        [["--vr-address"], initialValue(`localhost`), (str)=>str],
     ],
     namedArgsStopper: "--",
     allowNameRepeats: true,
@@ -55,6 +58,55 @@ const args = argsInfo.simplifiedNames
 //     )
 // )
 
+
+// 
+// position listener
+// 
+class PositionListener {
+    constructor({port, address, webSocketPath="ws", reconnectTimeout=1 }) {
+        this.port = port
+        this.address = address
+        this.reconnectTimeout = reconnectTimeout
+        this.latestPosition = null
+        this.lastUpdateTime = null
+        this.socket = null
+        this.isSetup = deferredPromise()
+        this.setupSelf()
+    }
+    handelMessage({data}) {
+        // filter for the controller (not the headset or lighthouses)
+        if (data.includes("POSE") && (!data.includes("T20") && !data.includes("LH_"))) {
+            if (this.latestPosition==null) {
+                this.isSetup.resolve()
+            }
+            this.lastUpdateTime = Date.now().getTime()
+            this.latestPosition = message.split(/ /g).filter(
+                each=>each.length > 0 && each[0].match(/[0-9\-]/)
+            ).map(
+                each=>parseFloat(each)
+            ).slice(1)
+        }
+    }
+    setupSelf() {
+        this.socket = new WebSocket(`ws://${address}:${port}/${path}`)
+        this.socket.onmessage = this.handelMessage.bind(this)
+        this.socket.onerror = (...args)=>{ 
+            try {
+                this.socket.close()
+            } catch (error) {
+                
+            }
+            console.log(`reconnecting to PositionListener in ${this.reconnectTimeout} second`)
+            setTimeout(()=>this.setupSelf(), 1000*this.reconnectTimeout)
+        }
+        this.socket.onclose = (...args)=>{ 
+            console.log(`reconnecting to PositionListener in ${this.reconnectTimeout} second`)
+            setTimeout(()=>this.setupSelf(), 1000*this.reconnectTimeout)
+        }
+    }
+}
+const positionListener = new PositionListener({port: args.vrPort, address: args.vrAddress, })
+
 // 
 // auto-reconnect 
 // 
@@ -64,6 +116,52 @@ while (true) {
     try {
         socket = new WebSocket(`ws://${args.address}:${args.port}/keypresses`)
         websocketConnection = deferredPromise()
+        socket.onmessage = ({ data }) => {
+            // MessageEvent {
+            //   bubbles: false,
+            //   cancelable: false,
+            //   composed: false,
+            //   currentTarget: WebSocket {
+            //     url: "ws://localhost:8080/keypresses",
+            //     readyState: 1,
+            //     extensions: "",
+            //     protocol: "",
+            //     binaryType: "blob",
+            //     bufferedAmount: 0,
+            //     onmessage: [Function (anonymous)],
+            //     onerror: [Function (anonymous)],
+            //     onclose: null,
+            //     onopen: [Function: resolve]
+            //   },
+            //   defaultPrevented: false,
+            //   eventPhase: 2,
+            //   srcElement: null,
+            //   target: WebSocket {
+            //     url: "ws://localhost:8080/keypresses",
+            //     readyState: 1,
+            //     extensions: "",
+            //     protocol: "",
+            //     binaryType: "blob",
+            //     bufferedAmount: 0,
+            //     onmessage: [Function (anonymous)],
+            //     onerror: [Function (anonymous)],
+            //     onclose: null,
+            //     onopen: [Function: resolve]
+            //   },
+            //   returnValue: true,
+            //   timeStamp: 0,
+            //   type: "message",
+            //   data: "howdyyy",
+            //   origin: "ws://localhost:8080/keypresses",
+            //   lastEventId: ""
+            // }
+            if (this.latestPosition!=null) {
+                FileSystem.append({
+                    path: args.logPath,
+                    data: `- { "spacialTime": ${positionListener.lastUpdateTime}, "spacialInfo": ${JSON.stringify(positionListener.latestPosition)}, "action": ${data}}`,
+                })
+            }
+        }
         socket.onopen = websocketConnection.resolve
         socket.onerror = (...args)=>{ 
             console.debug(`socket.onerror is:`,args)
