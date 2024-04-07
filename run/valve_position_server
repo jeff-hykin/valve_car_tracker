@@ -1,0 +1,2 @@
+#!/usr/bin/env sh
+sudo -E env "PATH=$PATH" survive-websocketd "$@"
