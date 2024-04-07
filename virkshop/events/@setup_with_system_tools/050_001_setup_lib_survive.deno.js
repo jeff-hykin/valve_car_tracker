@@ -1,6 +1,6 @@
-import { FileSystem } from "https://deno.land/x/quickr@0.6.38/main/file_system.js"
-import { Console } from "https://deno.land/x/quickr@0.6.38/main/console.js"
-import { run, Stdout, Stderr } from "https://deno.land/x/quickr@0.6.38/main/run.js"
+import { FileSystem } from "https://deno.land/x/quickr@0.6.66/main/file_system.js"
+import { Console } from "https://deno.land/x/quickr@0.6.66/main/console.js"
+import { run, Stdout, Stderr, Timeout} from "https://deno.land/x/quickr@0.6.66/main/run.js"
 
 const localLibSurviveCopy = `${Console.env.PROJECT_FOLDER}/repos/libsurvive`
 const libSurviveConfig = `${FileSystem.home}/.config/libsurvive/config.json`
@@ -22,7 +22,7 @@ if (!configInfo.exists && Deno.build.os == 'linux' ) {
         await run`${`${Console.env.VIRKSHOP_FOLDER}/commands/sudo`} rm -f ${`/etc/udev/rules.d/${FileSystem.basename(localRulesFile)}`} ${Stdout(null)} ${Stderr(null)}`
         await run`${`${Console.env.VIRKSHOP_FOLDER}/commands/sudo`} cp ${localRulesFile} /etc/udev/rules.d/`
         await run`${`${Console.env.VIRKSHOP_FOLDER}/commands/sudo`} udevadm control --reload-rules`
-        await run`${`${Console.env.VIRKSHOP_FOLDER}/commands/sudo`} udevadm trigger`
+        await run(`survive-cli`, Timeout({ gentlyBy: 4000, waitBeforeUsingForce: 1000}))
     } catch (error) {
         console.error(error)
     }

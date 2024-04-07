@@ -64,10 +64,14 @@ export default ({id, pluginSettings, virkshop, shellApi, helpers })=>({
             // 
             const virtualEnvPath = await FileSystem.info(VIRTUAL_ENV)
             let shellStatements = []
-            if (virtualEnvPath.isFolder) {
+            if (!virtualEnvPath.isDirectory) {
                 console.log(`        [python] creating virtual env for python`)
                 // clean first
-                await this.events['clean/054_000_python_venv']()
+                try {
+                    await this.events['clean/054_000_python_venv']()
+                } catch (error) {
+                    console.log(error)
+                }
                 // then create venv
                 const { success } = await run`python -m venv ${this.settings.virtualEnvFolder}`
                 if (success) {
