@@ -13,6 +13,6 @@
                                                         data: shellString,
                                                         path: tempShellOutputPath,
                                                     })
-                                                ' '--' '/home/jeffhykin/repos/valve_car_tracker_2/virkshop/support/virkshop.js' '/home/jeffhykin/repos/valve_car_tracker_2/virkshop/temporary.ignore/short_term/event_evals/06614541656161139.sh' 'python.deno.js'
+                                                ' '--' '/home/jeffhykin/repos/valve_car_tracker/virkshop/support/virkshop.js' '/home/jeffhykin/repos/valve_car_tracker/virkshop/temporary.ignore/short_term/event_evals/0870957985289601.sh' 'python.deno.js'
 ;
-'.' '/home/jeffhykin/repos/valve_car_tracker_2/virkshop/temporary.ignore/short_term/event_evals/06614541656161139.sh'
+'.' '/home/jeffhykin/repos/valve_car_tracker/virkshop/temporary.ignore/short_term/event_evals/0870957985289601.sh'

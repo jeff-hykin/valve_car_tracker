@@ -24,7 +24,7 @@ if (Console.env.VIRTUAL_ENV) {
             let index = 0
             for (const eachSharedObjectFile of sharedObjectFiles) {
                 index+= 1
-                progress.render(index+1)
+                progress.render(index)
                 // intentionally not awaited
                 run`patchelf --set-rpath ${ccLibsFolder} ${eachSharedObjectFile}`
             }
