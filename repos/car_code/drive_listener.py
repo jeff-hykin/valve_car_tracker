@@ -111,8 +111,9 @@ thread.start()
 # 
 # socket setup
 # 
-async def socket_response(websocket):
+async def socket_response(websocket_arg):
     global websocket
+    websocket = websocket_arg
     async for message in websocket:
         try:
             if websocket.path != "/keypresses":
