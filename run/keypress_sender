@@ -66,6 +66,7 @@ class PositionListener {
     constructor({port, address, webSocketPath="ws", reconnectTimeout=1 }) {
         this.port = port
         this.address = address
+        this.webSocketPath = webSocketPath
         this.reconnectTimeout = reconnectTimeout
         this.latestPosition = null
         this.lastUpdateTime = null
@@ -88,7 +89,7 @@ class PositionListener {
         }
     }
     setupSelf() {
-        this.socket = new WebSocket(`ws://${address}:${port}/${path}`)
+        this.socket = new WebSocket(`ws://${this.address}:${this.port}/${this.webSocketPath}`)
         this.socket.onmessage = this.handelMessage.bind(this)
         this.socket.onerror = (...args)=>{ 
             try {
