@@ -29,6 +29,7 @@ def record_position_func():
                                 for each in message.split(" ")
                                     if len(each) > 0 and (each[0].isdigit() or each[0]=="-") 
                         ][1:]
+                        time.sleep(0.01)
         except Exception as error:
             print(f'''error listening to position ({error})\nTrying to reconnect''')
             time.sleep(3)
@@ -41,13 +42,18 @@ threads_to_join.append(record_position_thread)
 # 
 car_address = None
 car_port = None
+car_process = None
 next_action = None # [ x_axis, y_axis, height_axis, pitch, roll, yaw, roll? ]
 def send_action():
-    global car_address, car_port, next_action
+    global car_address, car_port, next_action, car_process
     while True:
         if car_address == None or car_port == None:
             time.sleep(5)
             continue
+        car_process = subprocess.Popen(["ssh", f"ubuntu@{car_address}", "-t", f"cd ~/repos/valve_car_tracker/ && python3 ./repos/car/drive_listener.py ip_address:{car_address}"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        
+        time.sleep(5)
+        subprocess.Popen(["stty", "sane"])
         try:
             # sadly the websocketd from libsurvive is hardcoded to be port
             with connect(f"ws://{car_address}:{car_port}") as websocket:
@@ -59,13 +65,21 @@ def send_action():
                     else:
                         time.sleep(0.01)
         except Exception as error:
-            print(f'''error with car websocket ({error})\nTrying to reconnect''')
+            print(f'''error with car websocket ({error})...Trying to reconnect\r''')
+            time.sleep(3)
 send_action_thread = threading.Thread(target=send_action, args=())
 send_action_thread.start()
 threads_to_join.append(send_action_thread)
 
 
 class Env:
+    """
+    Example:
+        env = Env("192.168.1.100", 8080)
+        obs  = env.reset()
+        print(f'''obs = {obs}''')
+        print(env.step(dict(velocity=15,direction=10)))
+    """
     def __init__(self, car_address, car_port):
         global position, position_should_be_listening
         # this func is just to get around var-naming/scoping issues
