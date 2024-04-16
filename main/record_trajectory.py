@@ -158,7 +158,7 @@ try:
     trajectory_file_path = f"{logging_folder}/trajectory.yaml"
     trajectory_recorder = RecordKeeper()
     trajectory_recorder.live_write_to(trajectory_file_path, as_yaml=True)
-    record_rate = 0.1 # seconds
+    record_rate = 1 # seconds
     prev_quat = None
     def write_trajector_func():
         global prev_quat
@@ -284,28 +284,28 @@ try:
             if key != "":
                 # up
                 if key == "\x1b[A":
-                    print("up\n")
+                    print("up")
                     LiveValues.car_speed += speed_increment_rate
                     if LiveValues.car_speed > 100:
                         LiveValues.car_speed = 100
                 # down
                 elif key == "\x1b[B":
-                    print("down\n")
+                    print("down")
                     LiveValues.car_speed -= speed_increment_rate
                     if LiveValues.car_speed < -100:
                         LiveValues.car_speed = -100
                 # right
                 elif key == "\x1b[C":
-                    print("right\n")
-                    LiveValues.car_steer -= steer_increment_rate
-                    if LiveValues.car_steer < -100:
-                        LiveValues.car_steer = -100
-                # left
-                elif key == "\x1b[D":
-                    print("left\n")
+                    print("right")
                     LiveValues.car_steer += steer_increment_rate
                     if LiveValues.car_steer > 100:
                         LiveValues.car_steer = 100
+                # left
+                elif key == "\x1b[D":
+                    print("left")
+                    LiveValues.car_steer -= steer_increment_rate
+                    if LiveValues.car_steer < -100:
+                        LiveValues.car_steer = -100
                 else:
                     print("unhandled key: " + repr(key))
                 
