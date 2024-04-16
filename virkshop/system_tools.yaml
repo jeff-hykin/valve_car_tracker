@@ -34,6 +34,12 @@
     arguments:
         config: {}
 
+- (warehouse):
+    saveVariableAs: "warehouseForLsof"
+    createWarehouseFrom: { nixCommitHash: "e89cf1c932006531f454de7d652163a9a5c86668" }
+    arguments:
+        config: {}
+
 
 
 # 
@@ -183,6 +189,11 @@
 # Some very basic commands you may want to comment in
 #
 #
+- (package):
+    load: [ "lsof",]
+    asBuildInput: true
+    from: !!var warehouseForLsof
+
 - (package):
     load: [ "which",]
     asBuildInput: true
