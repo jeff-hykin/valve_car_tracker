@@ -20,10 +20,26 @@ config = dict(
 )
 logging_folder = "./logs"
 
-def quaternion_to_yaw_pitch_roll(quaternion):
-    rotation_matrix = R.from_quat(quaternion).as_matrix()
-    yaw_pitch_roll = R.from_matrix(rotation_matrix).as_euler('zyx', degrees=True)
-    return yaw_pitch_roll
+# def quaternion_to_yaw_pitch_roll(quaternion):
+#     rotation_matrix = R.from_quat(quaternion).as_matrix()
+#     yaw_pitch_roll = R.from_matrix(rotation_matrix).as_euler('zyx', degrees=True)
+#     return yaw_pitch_roll
+
+def quaternion_to_euler(q):
+    # Extract quaternion components
+    x, y, z, w = q
+
+    # Compute Euler angles
+    roll = np.arctan2(2 * (w * x + y * z), 1 - 2 * (x**2 + y**2))
+    pitch = np.arcsin(2 * (w * y - z * x))
+    yaw = np.arctan2(2 * (w * z + x * y), 1 - 2 * (y**2 + z**2))
+
+    # Convert angles from radians to degrees
+    roll = np.degrees(roll)
+    pitch = np.degrees(pitch)
+    yaw = np.degrees(yaw)
+
+    return yaw, pitch, roll
 
 def quaternion_dot(q1, q2):
     # Compute dot product of two quaternions
@@ -136,7 +152,7 @@ try:
     trajectory_file_path = f"{logging_folder}/trajectory.yaml"
     trajectory_recorder = RecordKeeper()
     trajectory_recorder.live_write_to(trajectory_file_path, as_yaml=True)
-    record_rate = 1 # second
+    record_rate = 0.1 # seconds
     prev_quat = None
     def write_trajector_func():
         global prev_quat
@@ -147,10 +163,15 @@ try:
                 if prev_quat != None:
                     angle_change = quaternion_angle(prev_quat, quaternion)
                 prev_quat = quaternion
+                # NOTE: I think these are relative to the lighthouses/absolute, not deltas that are relative to the controler
+                #       roll doesn't quite work how I would want it to (messes with other angles, not very isolated)
+                pitch, roll, yaw = quaternion_to_euler(quaternion)
+                print(f'''euler = {tuple(f"{round(each)}".ljust(5) for each in euler)}''')
                 
                 # yaw, pitch, roll = quaternion_to_yaw_pitch_roll(quaternion)
                 trajectory_recorder.push(
                     quaternion=quaternion,
+                    euler=dict(pitch=pitch, roll=roll, yaw=yaw),
                     x_axis=x_axis,
                     y_axis=y_axis,
                     height_axis=height_axis,
