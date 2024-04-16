@@ -3,13 +3,22 @@ import os
 import time
 import json
 import threading
+import atexit
 
 from websockets.sync.client import connect
 
 # 
-# connection to VR remote
+# thread helper
 # 
 threads_to_join = []
+@atexit.register
+def exit_handler():
+    for each in threads_to_join:
+        each.join()
+
+# 
+# connection to VR remote
+# 
 position_should_be_listening = False
 position = None # [ x_axis, y_axis, height_axis, pitch, roll, yaw, roll? ]
 def record_position_func():
@@ -111,9 +120,3 @@ class Env:
         reward = 1
         return observation, reward, done, debug
         
-
-import atexit
-@atexit.register
-def exit_handler():
-    for each in threads_to_join:
-        each.join()

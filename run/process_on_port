@@ -1,0 +1,8 @@
+#!/usr/bin/env sh
+
+lsof -i tcp:$@
+# if netstat exists
+if [ -n "$(command -v "netstat")" ]
+then
+    sudo $(which netstat) -tunlp | grep "$@"
+fi

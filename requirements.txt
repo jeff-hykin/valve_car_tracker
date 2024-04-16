@@ -1,2 +1,3 @@
 quick-config==0.2.4
 websockets==12.0
+rigorous_recorder==1.4.4
