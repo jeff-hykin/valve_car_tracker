@@ -27,11 +27,29 @@ if not dry_run:
 from generic_tools import pick_item
 
 
+# 
+# kill previous process to make sure port is available
+# 
+pid_path =f"{os.path.dirname(__file__)}/pid.ignore"
+try:
+    with open(pid_path,'r') as f:
+        output = f.read()
+except:
+    output = None
+
+if output:
+    subprocess.Popen(["kill", output.strip(),])
+    time.sleep(1)
+
+# save current pid
+with open(pid_path, 'w+') as the_file:
+    the_file.write(str(os.getpid()))
+
 
 # 
 # get ip for websocket
 # 
-port = config.default_keyboard_port
+port = config.get("car_port", config.default_keyboard_port)
 ip_address = config.get("ip_address", None)
 ip_addr_command = f"{parent_folder}/my_ip"
 ip_addresses = subprocess.check_output([ip_addr_command]).decode('utf-8')[0:-1].split("\n")

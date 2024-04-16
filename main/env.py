@@ -84,7 +84,7 @@ threads_to_join.append(send_action_thread)
 class Env:
     """
     Example:
-        env = Env("192.168.1.100", 8080)
+        env = Env("192.168.191.203", 8080)
         obs  = env.reset()
         print(f'''obs = {obs}''')
         print(env.step(dict(velocity=15,direction=10)))

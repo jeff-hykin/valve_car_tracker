@@ -1,0 +1,407 @@
+Pseudo-terminal will not be allocated because stdin is not a terminal.
+Warning: No xauth data; using fake authentication data for X11 forwarding.
+Note: use dry_run:True to test without car
+ip_address:192.168.191.203
+Starting keyboard_listener socket
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+LiveValues.car_velocity = 20
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 0
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+LiveValues.car_velocity = 20
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 20
+LiveValues.car_steer = 0
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+LiveValues.car_velocity = 40
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 60
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 40
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 20
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 40
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -40
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -60
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -40
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 0
+LiveValues.car_velocity = 0
+LiveValues.car_steer = 20
+LiveValues.car_velocity = -20
+LiveValues.car_steer = 20
+LiveValues.car_velocity = -40
+LiveValues.car_steer = 20
+LiveValues.car_velocity = -60
+LiveValues.car_steer = 20
+LiveValues.car_velocity = -40
+LiveValues.car_steer = 20
+LiveValues.car_velocity = -20
+LiveValues.car_steer = 20
+LiveValues.car_velocity = -20
+LiveValues.car_steer = 0
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -40
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -60
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -80
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -60
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -40
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -60
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -80
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -100
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 40
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 60
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 40
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -100
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -80
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -60
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -40
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 40
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 60
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 80
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 60
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 40
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -20
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = -40
+LiveValues.car_steer = -20
+LiveValues.car_velocity = -20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -20
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+time_of_last_command > 3sec, sending all zeros
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 40
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 60
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 40
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 20
+LiveValues.car_steer = -20
+LiveValues.car_velocity = 0
+LiveValues.car_steer = -20
